@@ -18,7 +18,7 @@ var SelfStore = require('ozp-react-commons/stores/SelfStore');
 var ProfileActions = require('ozp-react-commons/actions/ProfileActions');
 var LoadError = require('ozp-react-commons/components/LoadError.jsx');
 var {
-  METRICS_URL,
+  API_URL,
   APP_TITLE,
   IE_REDIRECT_URL
 } = require('ozp-react-commons/OzoneConfig');
@@ -40,6 +40,12 @@ $.ajaxPrefilter(function (options) {
     options.xhrFields = {
         withCredentials: true
     };
+});
+
+$(document).ajaxError(function (event, jqxhr, settings, thrownError ) {
+    if (settings.url.indexOf('/api/') >= 0 && thrownError === 'FORBIDDEN') {
+        window.location = API_URL + '/accounts/login/';
+    }
 });
 
 var Routes = require('./components/Routes.jsx'),
@@ -74,32 +80,6 @@ SelfStore.listen(_.once(function(profileData) {
 }));
 
 ProfileActions.fetchSelf();
-
-(function initPiwik() {
-    var _paq = window._paq || [];
-    _paq.push(['trackPageView']);
-    _paq.push(['enableLinkTracking']);
-
-    (function() {
-        var d = document,
-            g = d.createElement('script'),
-            s = d.getElementsByTagName('script')[0],
-            u = METRICS_URL;
-
-        _paq.push(['setTrackerUrl', u+'piwik.php']);
-        _paq.push(['setSiteId', 1]);
-
-        g.type='text/javascript';
-        g.async=true;
-        g.defer=true;
-        g.src=u+'piwik.js';
-        s.parentNode.insertBefore(g,s);
-    })();
-
-    window._paq = _paq;
-})();
-
-
 
 require('tour');
 require('./tour/tour.js');
