@@ -35,11 +35,37 @@ require('script!bootstrap-classify');
 window.moment = require('moment');
 window.Tether = require('tether');
 
+var getCookie = function(cookieName) {
+    var cookieValue = null;
+
+    if (document.cookie && document.cookie !== '') {
+        var cookies = document.cookie.split(';');
+
+        $.each(cookies, function(cookie) {
+            var cookie = $.trim(cookie);
+
+            // Does this cookie string begin with the cookieName we want?
+            if (cookie.substring(0, cookieName.length + 1) === (cookieName + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(cookieName.length + 1));
+
+                // Returning false breaks out of $.each
+                return false;
+            }
+        });
+    }
+
+    return cookieValue;
+};
+
 // Enable withCredentials for all requests
-$.ajaxPrefilter(function (options) {
+$.ajaxPrefilter(function (options, originalOptions, jqXHR) {
     options.xhrFields = {
         withCredentials: true
     };
+
+    if (options['type'].toLowerCase() === 'post') {
+        jqXHR.setRequestHeader('X-CSRFToken', getCookie('csrftoken'));
+    }
 });
 
 $(document).ajaxError(function (event, jqxhr, settings, thrownError ) {
