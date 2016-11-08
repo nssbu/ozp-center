@@ -63,7 +63,8 @@ $.ajaxPrefilter(function (options, originalOptions, jqXHR) {
         withCredentials: true
     };
 
-    if (options['type'].toLowerCase() === 'post') {
+    var requestType = options['type'].toLowerCase();
+    if (requestType === 'post' || requestType === 'delete') {
         jqXHR.setRequestHeader('X-CSRFToken', getCookie('csrftoken'));
     }
 });
