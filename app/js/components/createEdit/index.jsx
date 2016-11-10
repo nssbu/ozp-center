@@ -318,6 +318,22 @@ var ListingForm = React.createClass({
 
     getInitialState: () => ({ currentNavTarget: null }),
 
+    checkOwners: function(listing){
+      var faildList = listing.certIssues
+      if (faildList.length > 0){
+        sweetAlert({
+          title: "Warning!",
+          text: "The following users in in the owner field have invalid certificates <font color='red'><b>" + listing.certIssues + " </b></font>please remove these owners or notify them of this issue. You will be unable to save your listing until these changes have been made.",
+          type: "error",
+          confirmButtonColor: "#DD6B55",
+          confirmButtonText: "Ok",
+          closeOnConfirm: true,
+          html: true
+        });
+        faildList.certIssues=[];
+      }
+    },
+
     render: function () {
         var listing = this.props.value;
         var system = this.props.system;
@@ -328,18 +344,7 @@ var ListingForm = React.createClass({
                 return { username: u };
             }));
         };
-          if (listing.certIssues.length > 0){
-            sweetAlert({
-              title: "Warning!",
-              text: "The following users in in the owner field have invalid certificates <font color='red'><b>" + listing.certIssues + " </b></font>please remove these owners or notify them of this issue. You will be unable to save your listing until these changes have been made.",
-              type: "error",
-              confirmButtonColor: "#DD6B55",
-              confirmButtonText: "show errors",
-              closeOnConfirm: true,
-              html: true
-            });
-            listing.certIssues=[];
-          }
+        this.checkOwners(listing);
         var p = this.getFormComponentProps;
         var f = formLinks;
 
