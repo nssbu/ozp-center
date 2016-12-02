@@ -20,7 +20,8 @@ var LoadError = require('ozp-react-commons/components/LoadError.jsx');
 var {
   API_URL,
   APP_TITLE,
-  IE_REDIRECT_URL
+  IE_REDIRECT_URL,
+  SYSTEM_HIGH_CLASSIFICATION
 } = require('ozp-react-commons/OzoneConfig');
 
 
@@ -87,7 +88,7 @@ SelfStore.listen(_.once(function(profileData) {
     // Classification needs to run after the profileData is loaded
     $(function() {
         $(document).classification({
-            level: profileData.currentUser.secondPartyUser?'U':'U-FOUO'
+            level: SYSTEM_HIGH_CLASSIFICATION
         });
     });
 
