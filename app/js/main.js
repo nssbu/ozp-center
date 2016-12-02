@@ -88,7 +88,8 @@ SelfStore.listen(_.once(function(profileData) {
     // Classification needs to run after the profileData is loaded
     $(function() {
         $(document).classification({
-            level: SYSTEM_HIGH_CLASSIFICATION
+            level: SYSTEM_HIGH_CLASSIFICATION,
+            colorBanners: true
         });
     });
 
