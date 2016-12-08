@@ -1,6 +1,6 @@
 'use strict';
 
-var UnpaginatedListingsStore = require('../../../stores/UnpaginatedListingsStore');
+var PaginatedListingsStore = require('../../../stores/PaginatedListingsStore');
 var ListingActions = require('../../../actions/ListingActions');
 
 var React = require('react');
@@ -15,7 +15,7 @@ var moment = require('moment');
 var TableView = React.createClass({
 
     mixins: [
-        Reflux.listenTo(UnpaginatedListingsStore, 'onStoreChanged'),
+        Reflux.listenTo(PaginatedListingsStore, 'onStoreChanged'),
         Reflux.listenTo(ListingActions.listingChangeCompleted, 'onListingChangeCompleted'),
         Navigation,
         ActiveState
@@ -62,7 +62,16 @@ var TableView = React.createClass({
                 }
             },
             columns: this.getColumns(),
-            records: [],
+            limit: 25,
+            onLoad: function(event){
+               var data = $.parseJSON(event.xhr.responseText);
+               var result = {};
+               //todo: map results fields to proper records fields
+               result.records = data.results;
+               result.total = data.count;
+               event.xhr.responseText = result;
+            }, //todo: replace url with route instead of hard code
+            url: 'http://localhost:8001/api/listing/',
 
             /* eslint-disable no-unused-vars */
             onSubmit: function (event) {
@@ -109,7 +118,7 @@ var TableView = React.createClass({
                 }
             }
         });
-        this.fetchAllListingsIfEmpty();
+        //this.fetchAllListingsIfEmpty();
     },
 
     getColumns: function () {
@@ -267,7 +276,7 @@ var TableView = React.createClass({
     },
 
     getUnpaginatedList: function () {
-        return UnpaginatedListingsStore.getListingsByFilter(this.props.filter);
+        return PaginatedListingsStore.getListingsByFilter(this.props.filter);
     },
 
     fetchAllListingsIfEmpty: function () {
