@@ -1,6 +1,7 @@
 'use strict';
 
 var PaginatedListingsStore = require('../../../stores/PaginatedListingsStore');
+var Listing = require('../../../webapi/Listing');
 var ListingActions = require('../../../actions/ListingActions');
 
 var React = require('react');
@@ -65,9 +66,35 @@ var TableView = React.createClass({
             limit: 25,
             onLoad: function(event){
                var data = $.parseJSON(event.xhr.responseText);
+              
                var result = {};
                //todo: map results fields to proper records fields
-               result.records = data.results;
+               result.records = data.results.map( function (listing) {
+                   listing = new Listing.Listing(listing);
+               var result = {
+                  recid: listing.id,
+                  title: listing.title,
+                  owners: listing.owners,
+                  organization: listing.agency ? listing.agency : '',
+                  comments: listing.whatIsNew ? listing.whatIsNew : '',
+                  status: listing.approvalStatus,
+                  updated: listing.editedDate,
+                  actions: null,
+                  private: listing.isPrivate,
+                  securityMarking: listing.securityMarking
+                };
+                       
+            if(listing.approvalStatus !== 'DELETED'){
+                  result.enabled = listing.isEnabled ? "Enabled" : "Disabled";
+                  result.featured = listing.isFeatured;
+            }
+            else{
+                  result.enabled = null;
+                  result.featured = null;
+            }
+            return result;
+               });
+               console.log(result.records);
                result.total = data.count;
                event.xhr.responseText = result;
             }, //todo: replace url with route instead of hard code
@@ -150,14 +177,8 @@ var TableView = React.createClass({
             },
             { field: 'owners', caption: 'Owners', sortable: true, size: '10%',
                 render: function (record) {
-                    var owners = '';
-                    record.owners.forEach ( function (owner, index) {
-                        if (index) {
-                            owners += '; ';
-                        }
-                        owners += owner.displayName;
-                    });
-                    return owners;
+                    var owners = _.pluck(record.owners, 'displayName');
+                    return owners.join('; ');
                 }
             });
 
@@ -168,11 +189,11 @@ var TableView = React.createClass({
         columns.push(
             { field: 'private', caption: 'Private', size: '10%',
               render: function (record) {
-                  if (record.private) {
+                  if (record.private === true) {
                       return '<i class="icon-lock-blue"></i> Private';
-                  } else {
+                  } else if (record.private === false){
                       return 'Public';
-                  }
+                  } else return '';
               }
             },
             { field: 'comments', caption: 'Comments', size: '20%' },
