@@ -66,7 +66,7 @@ var TableView = React.createClass({
             limit: 25,
             onLoad: function(event){
                var data = $.parseJSON(event.xhr.responseText);
-              
+              // var onCountsChanged = super.props.onCountsChanged;
                var result = {};
                //todo: map results fields to proper records fields
                result.records = data.results.map( function (listing) {
@@ -97,6 +97,8 @@ var TableView = React.createClass({
                console.log(result.records);
                result.total = data.count;
                event.xhr.responseText = result;
+               thisTable.props.onCountsChanged(data.counts);
+
             }, //todo: replace url with route instead of hard code
             url: 'http://localhost:8001/api/listing/',
 
@@ -353,14 +355,12 @@ var TableView = React.createClass({
         });
 
         if (this.grid) {
-            this.grid.clear();
-            this.grid.records = records;
-            this.grid.refresh();
+  //          this.grid.clear();
+//            this.grid.refresh();
         }else{
             "warn";
         }
 
-        this.props.onCountsChanged(counts);
     },
 
     onListingChangeCompleted: function () {

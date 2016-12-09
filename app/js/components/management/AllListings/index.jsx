@@ -41,9 +41,8 @@ var AllListings = React.createClass({
             filter: this.state.filter
         });
         if(this.state.tableView){
-            this.state.filter.limit = w2ui.grid.limit;
-            this.state.filter.offset = w2ui.grid.offset;
-            //w2ui.grid.searchReset();
+            Object.assign(w2ui.grid.postData, this.state.filter);
+            w2ui.grid.reload();
         } 
             PaginatedListingsStore.filterChange(this.state.filter);
         
