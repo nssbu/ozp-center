@@ -103,7 +103,14 @@ var TableView = React.createClass({
             url: 'http://localhost:8001/api/listing/',
 
             /* eslint-disable no-unused-vars */
+            onRequest: function(event){
+                //todo: set the grid.postData object to the correct format as expected by the endpoint
+                // the object should have limit, offset, search, ordering
+                //consult the django rest documentation for what those filters can accept and pass the info in from the
+                //existing grid.postData then assign the new object to grid.postData
+            },
             onSubmit: function (event) {
+                console.log("submitting");
             /* eslint-enable no-unused-vars */
                 var records = this.records.map( function (record) {
                     var owners = '';
@@ -130,17 +137,18 @@ var TableView = React.createClass({
             },
 
             onClick: function (event) {
+                console.log(this);
                 event.preventDefault();
                 event.stopPropagation();
                 var target = event.originalEvent.target;
                 if (this.columns[event.column].field==="featured") {
                     if (target.type==='checkbox') {
                         if(thisTable.props.isAdmin && thisTable.props.isAdmin===true){
-                            var listing = thisTable.getUnpaginatedList().data.filter(
+                            var listing = this.records.filter(
                                 function (listing) {
-                                    return parseInt(listing.id) === parseInt(event.recid);
+                                    return parseInt(listing.recid) === parseInt(event.recid);
                                 }
-                            )[0];
+                            )[0];  console.log(listing);
                             ListingActions.setFeatured(target.checked, listing);
                         }
                     }
