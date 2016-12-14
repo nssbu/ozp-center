@@ -69,36 +69,11 @@ var TableView = React.createClass({
               // var onCountsChanged = super.props.onCountsChanged;
                var result = {};
                //todo: map results fields to proper records fields
-               result.records = data.results.map( function (listing) {
-                   listing = new Listing.Listing(listing);
-               var result = {
-                  recid: listing.id,
-                  title: listing.title,
-                  owners: listing.owners,
-                  organization: listing.agency ? listing.agency : '',
-                  comments: listing.whatIsNew ? listing.whatIsNew : '',
-                  status: listing.approvalStatus,
-                  updated: listing.editedDate,
-                  actions: null,
-                  private: listing.isPrivate,
-                  securityMarking: listing.securityMarking
-                };
-                       
-            if(listing.approvalStatus !== 'DELETED'){
-                  result.enabled = listing.isEnabled ? "Enabled" : "Disabled";
-                  result.featured = listing.isFeatured;
-            }
-            else{
-                  result.enabled = null;
-                  result.featured = null;
-            }
-            return result;
-               });
-               console.log(result.records);
+               result.records = thisTable.resultsMap(data)
+               console.log(event);
                result.total = data.count;
                event.xhr.responseText = result;
                thisTable.props.onCountsChanged(data.counts);
-
             }, //todo: replace url with route instead of hard code
             url: 'http://localhost:8001/api/listing/',
 
@@ -108,9 +83,17 @@ var TableView = React.createClass({
                 // the object should have limit, offset, search, ordering
                 //consult the django rest documentation for what those filters can accept and pass the info in from the
                 //existing grid.postData then assign the new object to grid.postData
+                if(event.postData.sort && event.postData.sort[0].direction == "asc"){
+                  var field = event.postData.sort[0].field;
+                  event.postData.ordering = field;
+
+                }
+                if(event.postData.sort && event.postData.sort[0].direction == "desc"){
+                  event.postData.ordering ="-"+event.postData.sort[0].field;
+                }
+                event.postData
             },
             onSubmit: function (event) {
-                console.log("submitting");
             /* eslint-enable no-unused-vars */
                 var records = this.records.map( function (record) {
                     var owners = '';
@@ -125,7 +108,7 @@ var TableView = React.createClass({
                         Id: record.recid,
                         Title: record.title,
                         Owners: owners,
-                        Organization: record.organization,
+                        Agency: record.organization,
                         Status: thisTable.convertStatus(record.status),
                         Updated: updatedDate,
                         Enabled: record.enabled,
@@ -137,7 +120,6 @@ var TableView = React.createClass({
             },
 
             onClick: function (event) {
-                console.log(this);
                 event.preventDefault();
                 event.stopPropagation();
                 var target = event.originalEvent.target;
@@ -148,7 +130,7 @@ var TableView = React.createClass({
                                 function (listing) {
                                     return parseInt(listing.recid) === parseInt(event.recid);
                                 }
-                            )[0];  console.log(listing);
+                            )[0];
                             ListingActions.setFeatured(target.checked, listing);
                         }
                     }
@@ -157,6 +139,35 @@ var TableView = React.createClass({
         });
         //this.fetchAllListingsIfEmpty();
     },
+    resultsMap: function(data){
+      var results = {}
+      results = data.results.map( function (listing) {
+          listing = new Listing.Listing(listing);
+      var result = {
+         recid: listing.id,
+         title: listing.title,
+         owners: listing.owners,
+         agency: listing.agency ? listing.agency : '',
+         comments: listing.whatIsNew ? listing.whatIsNew : '',
+         status: listing.approvalStatus,
+         updated: listing.editedDate,
+         actions: null,
+         private: listing.isPrivate,
+         securityMarking: listing.securityMarking
+       };
+
+    if(listing.approvalStatus !== 'DELETED'){
+         result.enabled = listing.isEnabled ? "Enabled" : "Disabled";
+         result.featured = listing.isFeatured;
+    }
+    else{
+         result.enabled = null;
+         result.featured = null;
+    }
+    return result
+     });
+     return results;
+   },
 
     getColumns: function () {
         var thisTable = this;
@@ -193,7 +204,7 @@ var TableView = React.createClass({
             });
 
         if (this.props.showOrg===true) {
-            columns.push({ field: 'organization', caption: 'Organization', sortable: true, size: '10%' });
+            columns.push({ field: 'agency', caption: 'Agency', sortable: true, size: '10%' });
         }
 
         columns.push(
