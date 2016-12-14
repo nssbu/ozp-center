@@ -196,7 +196,7 @@ var TableView = React.createClass({
                     }
                 }
             },
-            { field: 'owners', caption: 'Owners', sortable: true, size: '10%',
+            { field: 'owners__display_name', caption: 'Owners', sortable: true, size: '10%',
                 render: function (record) {
                     var owners = _.pluck(record.owners, 'displayName');
                     return owners.join('; ');
@@ -218,7 +218,7 @@ var TableView = React.createClass({
               }
             },
             { field: 'comments', caption: 'Comments', size: '20%' },
-            { field: 'status', caption: 'Status', sortable: true, size: '5%',
+            { field: 'approval_status', caption: 'Status', sortable: true, size: '5%',
                 render: function (record) {
                     return thisTable.convertStatus(record.status);
                 }
