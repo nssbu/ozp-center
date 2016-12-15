@@ -16,8 +16,6 @@ var moment = require('moment');
 var TableView = React.createClass({
 
     mixins: [
-        Reflux.listenTo(PaginatedListingsStore, 'onStoreChanged'),
-        Reflux.listenTo(ListingActions.listingChangeCompleted, 'onListingChangeCompleted'),
         Navigation,
         ActiveState
     ],
@@ -78,21 +76,10 @@ var TableView = React.createClass({
 
             /* eslint-disable no-unused-vars */
             onRequest: function(event){
-                //todo: set the grid.postData object to the correct format as expected by the endpoint
-                // the object should have limit, offset, search, ordering
-                //consult the django rest documentation for what those filters can accept and pass the info in from the
-                //existing grid.postData then assign the new object to grid.postData
+                
                 var postData = event.postData;
                 var sort = postData.sort;
                 var searchValue = postData.searchValue;
-                console.log(postData);
-               //  removing unnecessary parameters
-                if(postData.selected)
-                    delete postData.selected;
-                if(postData.search)
-                    delete postData.search;
-                if(postData.searchLogic)
-                    delete postData.searchLogic;
 
                 if(sort){
                     var field = sort[0].field;
@@ -106,6 +93,18 @@ var TableView = React.createClass({
                 if(searchValue){
                     postData.search = searchValue;
                     delete postData.searchValue;
+                }
+
+                //removing unnecessary parameters (null props get deleted in next step)
+                postData.selected = null;
+                postData.search = null;
+                postData.searchLogic = null;
+
+                //delete all parameters that are null so we don't filter on null fields like org or status
+                for(var prop in postData){
+                    if (postData.hasOwnProperty(prop) && postData[prop]===null) {
+                        delete postData[prop];
+                    }
                 }
 
                 event.postData = postData;
@@ -173,14 +172,12 @@ var TableView = React.createClass({
          updated: listing.editedDate,
          actions: null,
          private: listing.isPrivate,
-         securityMarking: listing.securityMarking
+         securityMarking: listing.securityMarking,
+         enabled: listing.isEnabled ? "Enabled" : "Disabled",
+         featured: listing.isFeatured
        };
 
-    if(listing.approvalStatus !== 'DELETED'){
-         result.enabled = listing.isEnabled ? "Enabled" : "Disabled";
-         result.featured = listing.isFeatured;
-    }
-    else{
+    if(listing.approvalStatus === 'DELETED'){
          result.enabled = null;
          result.featured = null;
     }
@@ -337,61 +334,7 @@ var TableView = React.createClass({
         return displayStatus;
     },
 
-    getUnpaginatedList: function () {
-        return PaginatedListingsStore.getListingsByFilter(this.props.filter);
-    },
-
-    fetchAllListingsIfEmpty: function () {
-        var listings = this.getUnpaginatedList();
-        if (!listings || listings==='undefined') {
-            ListingActions.fetchAllListingsAtOnce(this.props.filter);
-        }
-        this.onStoreChanged();
-    },
-
-    onStoreChanged: function () {
-        var unpaginatedList = this.getUnpaginatedList();
-
-        if (!unpaginatedList) {
-            return;
-        }
-
-        var {data, counts } = unpaginatedList;
-
-        var records = data.map( function (listing) {
-            var result = {
-                  recid: listing.id,
-                  title: listing.title,
-                  owners: listing.owners,
-                  organization: listing.agency ? listing.agency : '',
-                  comments: listing.whatIsNew ? listing.whatIsNew : '',
-                  status: listing.approvalStatus,
-                  updated: listing.editedDate,
-                  actions: null,
-                  private: listing.isPrivate,
-                  securityMarking: listing.securityMarking,
-                  enabled: listing.isEnabled ? "Enabled" : "Disabled",
-                  featured: listing.isFeatured
-            }
-            if(listing.approvalStatus === 'DELETED'){
-                result.enabled = null;
-                result.featured = null;
-            }
-            return result;
-        });
-
-        if (this.grid) {
-  //          this.grid.clear();
-//            this.grid.refresh();
-        }else{
-            "warn";
-        }
-
-    },
-
-    onListingChangeCompleted: function () {
-        ListingActions.fetchAllListingsAtOnce(this.props.filter);
-    },
+   
 
     JSONToCSVConvertor: function (JSONData, ReportTitle, ShowLabel) {
 
