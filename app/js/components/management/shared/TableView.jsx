@@ -76,7 +76,7 @@ var TableView = React.createClass({
 
             /* eslint-disable no-unused-vars */
             onRequest: function(event){
-                
+
                 var postData = event.postData;
                 var sort = postData.sort;
                 var searchValue = postData.searchValue;
@@ -173,8 +173,8 @@ var TableView = React.createClass({
          actions: null,
          private: listing.isPrivate,
          securityMarking: listing.securityMarking,
-         enabled: listing.isEnabled ? "Enabled" : "Disabled",
-         featured: listing.isFeatured
+         is_enabled: listing.isEnabled ? "Enabled" : "Disabled",
+         is_featured: listing.isFeatured
        };
 
     if(listing.approvalStatus === 'DELETED'){
@@ -245,18 +245,18 @@ var TableView = React.createClass({
                     return moment(record.updated).format('MM/DD/YY');
                 }
             },
-            { field: 'enabled', caption: 'Enabled', sortable: true, size: '5%'},
-            { field: 'featured', caption: 'Featured', sortable: true, size: '5%',
+            { field: 'is_enabled', caption: 'Enabled', sortable: true, size: '5%'},
+            { field: 'is_featured', caption: 'Featured', sortable: true, size: '5%',
                 render: function (record) {
                     if (thisTable.props.isAdmin===true) {
-                      if(record.featured !== null){
-                        if (record.featured) {
+                      if(record.is_featured !== null){
+                        if (record.is_featured) {
                             return '<input type="checkbox" checked/>';
                         } else {
                             return '<input type="checkbox" />';
                         }
                     } else {
-                        if (record.featured) {
+                        if (record.is_featured) {
                             return '<input type="checkbox" disabled="true" checked/>';
                         } else {
                             return '<input type="checkbox" disabled="false" />';
@@ -334,7 +334,7 @@ var TableView = React.createClass({
         return displayStatus;
     },
 
-   
+
 
     JSONToCSVConvertor: function (JSONData, ReportTitle, ShowLabel) {
 
