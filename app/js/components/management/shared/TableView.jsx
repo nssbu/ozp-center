@@ -359,8 +359,7 @@ var TableView = React.createClass({
         var {data, counts } = unpaginatedList;
 
         var records = data.map( function (listing) {
-            if(listing.approvalStatus !== 'DELETED'){
-              return {
+            var result = {
                   recid: listing.id,
                   title: listing.title,
                   owners: listing.owners,
@@ -368,29 +367,17 @@ var TableView = React.createClass({
                   comments: listing.whatIsNew ? listing.whatIsNew : '',
                   status: listing.approvalStatus,
                   updated: listing.editedDate,
+                  actions: null,
+                  private: listing.isPrivate,
+                  securityMarking: listing.securityMarking,
                   enabled: listing.isEnabled ? "Enabled" : "Disabled",
-                  featured: listing.isFeatured,
-                  actions: null,
-                  private: listing.isPrivate,
-                  securityMarking: listing.securityMarking
-              };
+                  featured: listing.isFeatured
             }
-            else{
-              return {
-                  recid: listing.id,
-                  title: listing.title,
-                  owners: listing.owners,
-                  organization: listing.agency ? listing.agency : '',
-                  comments: listing.whatIsNew ? listing.whatIsNew : '',
-                  status: listing.approvalStatus,
-                  updated: listing.editedDate,
-                  enabled: null,
-                  featured: null,
-                  actions: null,
-                  private: listing.isPrivate,
-                  securityMarking: listing.securityMarking
-              };
+            if(listing.approvalStatus === 'DELETED'){
+                result.enabled = null;
+                result.featured = null;
             }
+            return result;
         });
 
         if (this.grid) {
