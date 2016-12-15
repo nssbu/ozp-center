@@ -70,7 +70,6 @@ var TableView = React.createClass({
                var result = {};
                //todo: map results fields to proper records fields
                result.records = thisTable.resultsMap(data)
-               console.log(event);
                result.total = data.count;
                event.xhr.responseText = result;
                thisTable.props.onCountsChanged(data.counts);
@@ -83,15 +82,36 @@ var TableView = React.createClass({
                 // the object should have limit, offset, search, ordering
                 //consult the django rest documentation for what those filters can accept and pass the info in from the
                 //existing grid.postData then assign the new object to grid.postData
-                if(event.postData.sort && event.postData.sort[0].direction == "asc"){
-                  var field = event.postData.sort[0].field;
-                  event.postData.ordering = field;
+                var postData = event.postData;
+                var sort = postData.sort;
+                var searchValue = postData.searchValue;
+                console.log(postData);
+               //  removing unnecessary parameters
+                if(postData.selected)
+                    delete postData.selected;
+                if(postData.search)
+                    delete postData.search;
+                if(postData.searchLogic)
+                    delete postData.searchLogic;
 
+                if(sort){
+                    var field = sort[0].field;
+                    var direction = sort[0].direction;
+                    if (direction === 'asc')
+                        postData.ordering = field;
+                    if (direction === 'desc')
+                        postData.ordering = '-' + field;
+                    delete postData.sort;
                 }
-                if(event.postData.sort && event.postData.sort[0].direction == "desc"){
-                  event.postData.ordering ="-"+event.postData.sort[0].field;
+                if(searchValue){
+                    postData.search = searchValue;
+                    delete postData.searchValue;
                 }
-                event.postData
+
+                event.postData = postData;
+            },
+            onSearch: function (event) {
+                this.postData.searchValue = event.searchValue;
             },
             onSubmit: function (event) {
             /* eslint-enable no-unused-vars */
@@ -199,7 +219,7 @@ var TableView = React.createClass({
             { field: 'owners__display_name', caption: 'Owners', sortable: true, size: '10%',
                 render: function (record) {
                     var owners = _.pluck(record.owners, 'displayName');
-                    return owners.join('; ');
+                    return owners.sort().join('; ');
                 }
             });
 
