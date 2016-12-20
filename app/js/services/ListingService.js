@@ -231,4 +231,4 @@ ListingActions.deleteListing.listen(function (listing) {
         .fail(ListingActions.deleteListingFailed);
 });
 
-ListingActions.setFeatured.listen(updateListingProperty.bind(null, 'isFeatured'));
+ListingActions.setFeatured.listen(function(checked,listing){updateListingProperty('isFeatured',checked,listing)});

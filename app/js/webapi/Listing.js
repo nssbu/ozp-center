@@ -54,7 +54,7 @@ function Listing (json) {
     });
 
     function viewingExistingListing(json) {
-        // This data comes from the API/listing endpoint      
+        // This data comes from the API/listing endpoint
         return json && json.id;
     }
 

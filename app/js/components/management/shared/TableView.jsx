@@ -1,6 +1,7 @@
 'use strict';
 
 var PaginatedListingsStore = require('../../../stores/PaginatedListingsStore');
+var GlobalListingStore = require('../../../stores/GlobalListingStore')
 var Listing = require('../../../webapi/Listing');
 var ListingActions = require('../../../actions/ListingActions');
 
@@ -12,6 +13,7 @@ var { Navigation } = require('react-router');
 var ActiveState = require('../../../mixins/ActiveStateMixin');
 
 var moment = require('moment');
+var API_WAIT = 1000;
 
 var TableView = React.createClass({
 
@@ -142,7 +144,7 @@ var TableView = React.createClass({
                 event.preventDefault();
                 event.stopPropagation();
                 var target = event.originalEvent.target;
-                if (this.columns[event.column].field==="featured") {
+                if (this.columns[event.column].field==="is_featured") {
                     if (target.type==='checkbox') {
                         if(thisTable.props.isAdmin && thisTable.props.isAdmin===true){
                             var listing = this.records.filter(
@@ -150,7 +152,19 @@ var TableView = React.createClass({
                                     return parseInt(listing.recid) === parseInt(event.recid);
                                 }
                             )[0];
-                            ListingActions.setFeatured(target.checked, listing);
+                            var counter = 0;
+                            var apiTimer = setInterval(() => {
+                                var updatedListing = GlobalListingStore.getById(listing.recid)
+
+                                counter++;
+
+                                if (updatedListing) {
+                                  ListingActions.setFeatured(target.checked,updatedListing )
+                                    clearInterval(apiTimer);
+                                }
+                            }, API_WAIT);
+                            //ListingActions.setFeatured(target.checked,updatedListing );
+
                         }
                     }
                 }
@@ -174,9 +188,8 @@ var TableView = React.createClass({
          private: listing.isPrivate,
          securityMarking: listing.securityMarking,
          is_enabled: listing.isEnabled ? "Enabled" : "Disabled",
-         is_featured: listing.isFeatured
+         featured: listing.isFeatured,
        };
-
     if(listing.approvalStatus === 'DELETED'){
          result.enabled = null;
          result.featured = null;
@@ -225,7 +238,7 @@ var TableView = React.createClass({
         }
 
         columns.push(
-            { field: 'private', caption: 'Private', size: '10%',
+            { field: 'is_private', caption: 'Private', size: '10%',sortable: true,
               render: function (record) {
                   if (record.private === true) {
                       return '<i class="icon-lock-blue"></i> Private';
@@ -249,14 +262,14 @@ var TableView = React.createClass({
             { field: 'is_featured', caption: 'Featured', sortable: true, size: '5%',
                 render: function (record) {
                     if (thisTable.props.isAdmin===true) {
-                      if(record.is_featured !== null){
-                        if (record.is_featured) {
+                      if(record.featured !== null){
+                        if (record.featured) {
                             return '<input type="checkbox" checked/>';
                         } else {
                             return '<input type="checkbox" />';
                         }
                     } else {
-                        if (record.is_featured) {
+                        if (record.featured) {
                             return '<input type="checkbox" disabled="true" checked/>';
                         } else {
                             return '<input type="checkbox" disabled="false" />';
