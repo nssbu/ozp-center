@@ -1,6 +1,5 @@
 'use strict';
 
-var PaginatedListingsStore = require('../../../stores/PaginatedListingsStore');
 var GlobalListingStore = require('../../../stores/GlobalListingStore')
 var Listing = require('../../../webapi/Listing');
 var ListingActions = require('../../../actions/ListingActions');
@@ -19,7 +18,8 @@ var TableView = React.createClass({
 
     mixins: [
         Navigation,
-        ActiveState
+        ActiveState,
+        Reflux.listenTo(ListingActions.listingChangeCompleted, 'onListingChangeCompleted')
     ],
 
     propTypes: {
@@ -101,6 +101,7 @@ var TableView = React.createClass({
                 postData.selected = null;
                 postData.search = null;
                 postData.searchLogic = null;
+                postData.cmd = null;
 
                 //delete all parameters that are null so we don't filter on null fields like org or status
                 for(var prop in postData){
@@ -327,6 +328,10 @@ var TableView = React.createClass({
             }
         );
         return columns;
+    },
+
+    onListingChangeCompleted: function (event) {
+      this.grid.reload();
     },
 
     convertStatus: function (status) {
