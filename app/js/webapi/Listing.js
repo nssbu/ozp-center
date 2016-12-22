@@ -413,6 +413,10 @@ var ListingApi = {
             return counts;
         });
     },
+    getGrid: function (){
+        var url = API_URL + '/api/listing/?';
+        return url;
+    },
 
     getAllChangeLogs: function (profile, url, options) {
         if(!_.isString(url)) {

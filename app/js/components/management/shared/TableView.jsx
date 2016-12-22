@@ -19,7 +19,7 @@ var TableView = React.createClass({
     mixins: [
         Navigation,
         ActiveState,
-        Reflux.listenTo(ListingActions.listingChangeCompleted, 'onListingChangeCompleted')
+        Reflux.listenTo(ListingActions.deleteListingCompleted, 'onListingChangeCompleted')
     ],
 
     propTypes: {
@@ -74,7 +74,7 @@ var TableView = React.createClass({
                event.xhr.responseText = result;
                thisTable.props.onCountsChanged(data.counts);
             }, //todo: replace url with route instead of hard code
-            url: 'http://localhost:8001/api/listing/',
+            url: Listing.ListingApi.getGrid(),
 
             /* eslint-disable no-unused-vars */
             onRequest: function(event){
@@ -263,7 +263,7 @@ var TableView = React.createClass({
             { field: 'is_featured', caption: 'Featured', sortable: true, size: '5%',
                 render: function (record) {
                     if (thisTable.props.isAdmin===true) {
-                      if(record.featured !== null){
+                      if(record.featured !== null && record.status !== 'DELETED'){
                         if (record.featured) {
                             return '<input type="checkbox" checked/>';
                         } else {
@@ -330,7 +330,8 @@ var TableView = React.createClass({
         return columns;
     },
 
-    onListingChangeCompleted: function (event) {
+    onListingChangeCompleted: function () {
+      //console.log(event)
       this.grid.reload();
     },
 
