@@ -4,6 +4,7 @@ var Reflux = require('reflux');
 var React = require('react');
 var _ = require('../../utils/_');
 var ChangeLogs = require('./ChangeLogs.jsx');
+var GlobalListingStore = require('../../stores/GlobalListingStore')
 var ListingActions = require('../../actions/ListingActions');
 var fetchChangeLogs = ListingActions.fetchChangeLogs;
 var rejectListing = ListingActions.reject;
@@ -86,7 +87,9 @@ var FeaturedControl = React.createClass({
 });
 
 var AdministrationTab = React.createClass({
-
+    mixins: [
+      Reflux.listenTo(ListingActions.listingChangeCompleted, 'onListingChangeCompleted'),
+    ],
     propTypes: {
         listing: React.PropTypes.object.isRequired
     },
@@ -105,6 +108,10 @@ var AdministrationTab = React.createClass({
         if (this.props.listing.id) {
             fetchChangeLogs(this.props.listing.id);
         }
+    },
+
+    onListingChangeCompleted: function(){
+      fetchChangeLogs(this.props.listing.id);
     },
 
     render: function () {

@@ -198,14 +198,14 @@ ListingActions.save.listen(function (data) {
     ListingApi
         .save(data)
         .then(ListingActions.saveCompleted.bind(null, isNew))
-        .then(ListingActions.listingChangeCompleted(data))
+        .then(ListingActions.listingChangeCompleted(data.id))
         .fail(ListingActions.saveFailed);
 });
 
 ListingActions.reject.listen(function (listingId, description) {
     ListingApi.rejectListing(listingId, description)
-        .then(ListingActions.rejectCompleted)
-        .then(ListingActions.listingChangeCompleted);
+        .then(ListingActions.rejectCompleted(listingId, description))
+        .then(ListingActions.listingChangeCompleted(listingId));
 });
 
 ListingActions.enable.listen(setEnabled.bind(null, true));
@@ -221,7 +221,7 @@ ListingActions.pendingDelete.listen(function (listing) {
     data.isEnabled=false;
     ListingApi.save(data)
     .then(ListingActions.pendingDeleteCompleted.bind(null, data))
-    .then(ListingActions.listingChangeCompleted(data))
+    .then(ListingActions.listingChangeCompleted(data.id))
     .fail(ListingActions.pendingDeleteFailed)
 });
 
@@ -243,7 +243,7 @@ ListingActions.undelete.listen(function (listing) {
     data.isEnabled=true;
     ListingApi.save(data)
     .then(ListingActions.undeleteCompleted.bind(null, data))
-    .then(ListingActions.listingChangeCompleted(data))
+    .then(ListingActions.listingChangeCompleted(data.id))
     .fail(ListingActions.pendingDeleteFailed)
 });
 
@@ -253,7 +253,7 @@ ListingActions.deleteListing.listen(function (listing) {
     listing.approvalStatus = 'DELETED';
     ListingApi.del(listing.id)
         .then(ListingActions.deleteListingCompleted.bind(null, listing))
-        .then(ListingActions.listingChangeCompleted(listing))
+        .then(ListingActions.listingChangeCompleted(listing.id))
         .fail(ListingActions.deleteListingFailed);
 
 });

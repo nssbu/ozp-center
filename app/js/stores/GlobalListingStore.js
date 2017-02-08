@@ -48,6 +48,9 @@ var GlobalListingStore = Reflux.createStore({
             _allListings = (_allListings || []).concat(listings);
             this.trigger();
         });
+        this.listenTo(ListingActions.listingChangeCompleted, function (listingId) {
+            ListingActions.fetchChangeLogs(listingId)
+        });
         this.listenTo(ListingActions.fetchChangeLogsCompleted, function (id, changeLogs) {
             _changeLogsCache[id] = changeLogs;
             this.trigger();
@@ -60,19 +63,25 @@ var GlobalListingStore = Reflux.createStore({
             updateOwnerCache(listings);
             this.trigger();
         });
+        this.listenTo(ListingActions.fetchAllListingsAtOnceCompleted, function (filter, response) {
+            var listings = response.getItemAsList();
+            updateCache(listings);
+            _allListings = (_allListings || []).concat(listings);
+            this.trigger();
+        });
         this.listenTo(ListingActions.saveCompleted, function (isNew, listing) {
             updateCache([listing]);
             if (isNew) {
                 listingCreated(listing);
             }
-            ListingActions.fetchChangeLogs(listing.id);
+            //ListingActions.fetchChangeLogs(listing.id);
             this.trigger();
         });
-        this.listenTo(ListingActions.rejectCompleted, function (rejection) {
-            var listing = _listingsCache[rejection.listing.id];
+        this.listenTo(ListingActions.rejectCompleted, function (listingId, rejection) {
+            var listing = _listingsCache[listingId];
             listing.rejection = rejection;
             listing.approvalStatus = 'REJECTED';
-            ListingActions.fetchChangeLogs(listing.id);
+            //ListingActions.fetchChangeLogs(listing.id);
             this.trigger();
         });
         this.listenTo(ListingActions.pendingDeleteCompleted, function (data) {
@@ -83,7 +92,7 @@ var GlobalListingStore = Reflux.createStore({
               });
               _listingsByOwnerCache = ownedListings;
           });
-          ListingActions.fetchChangeLogs(listing.id);
+          //ListingActions.fetchChangeLogs(listing.id);
           this.trigger();
         });
         this.listenTo(ListingActions.fetchByIdCompleted, function (data) {
@@ -99,7 +108,7 @@ var GlobalListingStore = Reflux.createStore({
                 });
                 _listingsByOwnerCache = ownedListings;
             });
-            ListingActions.fetchChangeLogs(listing.id);
+            //ListingActions.fetchChangeLogs(listing.id);
             this.trigger();
         });
 
