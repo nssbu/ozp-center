@@ -30,12 +30,13 @@ var UnpaginatedListingsStore = Reflux.createStore({
     init: function () {
         this.listenTo(ListingActions.fetchAllListingsAtOnceCompleted, this.onFetchAllListingsAtOnceCompleted);
         this.listenTo(ListingActions.listingChangeCompleted, this.onListingChangeCompleted);
+        this.listenTo(ListingActions.deleteListingCompleted, this.onListingChangeCompleted)
     },
 
     onFetchAllListingsAtOnceCompleted: function (filter, response) {
         var key = filterKey(filter);
         var page = new PaginatedList (response);
-     
+
         _unpaginatedListByFilter[key] = page;
         this.trigger();
     },

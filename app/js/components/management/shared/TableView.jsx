@@ -17,6 +17,7 @@ var TableView = React.createClass({
     mixins: [
         Reflux.listenTo(UnpaginatedListingsStore, 'onStoreChanged'),
         Reflux.listenTo(ListingActions.listingChangeCompleted, 'onListingChangeCompleted'),
+        Reflux.listenTo(ListingActions.deleteListingCompleted, 'onListingChangeCompleted'),
         Navigation,
         ActiveState
     ],
@@ -70,14 +71,14 @@ var TableView = React.createClass({
                 event.preventDefault();
                 if(event.postData.cmd === 'get-records'){
                     if (thisTable.props.filter.limit + thisTable.props.filter.offset < this.total){
-                        thisTable.props.filter.offset += thisTable.props.filter.limit;                                        
+                        thisTable.props.filter.offset += thisTable.props.filter.limit;
                     } else if (this.total > 0)
                         return;
                     //show spinner while loading
                     var more = $('#grid_'+ this.name +'_rec_more');
                     more.show().find('td').html('<div><div style="width: 20px; height: 20px;" class="w2ui-spinner"></div></div>');
                     UnpaginatedListingsStore.filterChange(thisTable.props.filter);
-                } 
+                }
                 return;
             },
             onSort: function(event){
@@ -106,7 +107,7 @@ var TableView = React.createClass({
                 }
                 this.last.search = event.searchValue
                 UnpaginatedListingsStore.filterChange(thisTable.props.filter);
-                
+
                 event.preventDefault();
                 var str = [event.searchValue];
                 $(this.box).find('.w2ui-grid-data > div').w2marker(str);
@@ -362,7 +363,7 @@ var TableView = React.createClass({
             this.grid.records = records;
             this.grid.refresh();
             this.grid.requestComplete('success','get-records', function(){});
-            
+
         }else{
             "warn";
         }
