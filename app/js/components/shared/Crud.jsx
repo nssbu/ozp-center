@@ -201,6 +201,17 @@ var Crud = React.createClass({
         );
     },
 
+    renderDemoteConfirmation: function () {
+        var kind = this.props.title.toLowerCase();
+        var title = this.props.getDisplayName(this.getSelectedRecord());
+
+        return (
+            <DemoteConfirmation ref="modal" kind={ kind } title={ title }
+                errorMessage={this.state.errorMessage}
+                onHidden={this.resetState} onDelete={this.onDelete} />
+        );
+    },
+
     getSelectedId: function () {
         return this.grid.getSelection()[0];
     },
@@ -286,6 +297,29 @@ var Crud = React.createClass({
         })
         .done(this.reload)
         .fail(this.handleError);
+    },
+
+    onDemote: function () {
+        if (newGrid.records.length <= 1){
+            w2alert('There must be at least one Steward.');
+        }
+        else{
+            var newUserInfo = {"stewardedOrganizations": [],
+            "user":{"groups":[{"name":"USER"}]}
+            };
+
+            $.ajax({
+                type: 'PUT',
+                url: API_URL + `/api/profile/${userID}/`,
+                data: JSON.stringify(humps.decamelizeKeys(newUserInfo)),
+                contentType: 'application/json'
+            })
+
+            //To ensure changes are finished before updating the grid
+            setTimeout(function(){
+                w2ui['grid'].reload();
+            }, 100);
+        }
     },
 
     reload: function () {
