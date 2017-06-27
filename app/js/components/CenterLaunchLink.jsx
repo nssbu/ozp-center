@@ -13,7 +13,7 @@ function getState(profileData) {
     var profile = profileData.currentUser,
         launchInWebtop = profile ? profile.launchInWebtop : false;
 
-    return {launchInWebtop: launchInWebtop, onHidden: true, launchModal: false};
+    return {launchInWebtop: launchInWebtop, launchModal: false};
 }
 
 /**
