@@ -67,9 +67,9 @@ var Stewards = React.createClass({
             grid: {
                 name: 'grid',
                 toolbar: {
-                    name: 'stewards',
+                    name: 'toolbar',
                     items: [
-                        { type: 'button', id: 'demoteButton', caption: 'Demote', title: 'Demote a Steward', img: 'icon-delete' }
+                        { type: 'button', id: 'demoteButton', caption: 'Demote', hint: 'Demote a Steward', img: 'icon-delete', disabled: true }
                     ],
                     onClick: function (target, data) {
                         data.onComplete = function(){
@@ -85,43 +85,54 @@ var Stewards = React.createClass({
                             }
 
                             if (data.target === 'demoteButton') {
-//                                w2confirm('Are you sure you want to remove ' + username + ' from Stewards?')
-//                                    .yes(function () {
+                                w2confirm('Are you sure you want to remove ' + username + ' from Stewards?')
+                                    .yes(function () {
 //                                        if (newGrid.records.length <= 1){
 //                                            w2alert('There must be at least one Steward.');
 //                                        }
 //                                        else{
-//                                            var newUserInfo = {"stewardedOrganizations": [],
-//                                            "user":{"groups":[{"name":"USER"}]}
-//                                            };
-//
-//                                            $.ajax({
-//                                                type: 'PUT',
-//                                                url: API_URL + `/api/profile/${userID}/`,
-//                                                data: JSON.stringify(humps.decamelizeKeys(newUserInfo)),
-//                                                contentType: 'application/json'
-//                                            })
-//
-//                                            //To ensure changes are finished before updating the grid
-//                                          setTimeout(function(){
-//                                                w2ui['grid'].reload();
-//                                            }, 100);
+                                            var newUserInfo = {"stewardedOrganizations": [],
+                                            "user":{"groups":[{"name":"USER"}]}
+                                            };
+
+                                            $.ajax({
+                                                type: 'PUT',
+                                                url: API_URL + `/api/profile/${userID}/`,
+                                                data: JSON.stringify(humps.decamelizeKeys(newUserInfo)),
+                                                contentType: 'application/json'
+                                            })
+
+                                            //To ensure changes are finished before updating the grid
+                                            setTimeout(function(){
+                                                w2ui['grid'].reload();
+                                                w2ui['grid'].toolbar.disable('demoteButton');
+                                            }, 100);
 //                                        }
-//                                    });
+                                    });
 //                                    <DemoteConfirmation ref="modal" kind={ "steward" } title={ username }
 //                                        errorMessage={newGrid.state.errorMessage}
 //                                        onHidden={newGrid.resetState} onDemote={newGrid.onDemote} />
 
-
+                                      {DemoteConfirmation}
                             }
                         }
                     }
+
                 },
+
                 columns: [
                     { field: 'displayName', caption: 'Display Name', size: '34%' },
                     { field: 'username', caption: 'Username', size: '33%' },
                     { field: 'stewardedOrganizations', caption: 'Steward Organizations', size: '33%'}
                 ],
+                onSelect: function (event) {
+                    console.log(this.toolbar.owner);
+                    if (this.toolbar.owner.records.length > 1)
+                        w2ui['grid'].toolbar.enable('demoteButton');
+                },
+                onUnselect: function (event) {
+                    w2ui['grid'].toolbar.disable('demoteButton');
+                },
                 show: {
                     toolbar: true,
                     toolbarAdd: false,
@@ -129,33 +140,11 @@ var Stewards = React.createClass({
                     toolbarDelete: false,
                     toolbarSearch: false,
                     toolbarReload: false,
-                    toolbarColumns: false
+                    toolbarColumns: false,
+                    demoteButton: true
                 }
             }
         };
-    },
-
-    onDemote: function () {
-        if (newGrid.records.length <= 1){
-            w2alert('There must be at least one Steward.');
-        }
-        else{
-            var newUserInfo = {"stewardedOrganizations": [],
-            "user":{"groups":[{"name":"USER"}]}
-            };
-
-            $.ajax({
-                type: 'PUT',
-                url: API_URL + `/api/profile/${userID}/`,
-                data: JSON.stringify(humps.decamelizeKeys(newUserInfo)),
-                contentType: 'application/json'
-            })
-
-            //To ensure changes are finished before updating the grid
-            setTimeout(function(){
-                w2ui['grid'].reload();
-            }, 100);
-        }
     },
 
     getSchema: function () {
@@ -173,7 +162,7 @@ var Stewards = React.createClass({
     },
 
     render: function () {
-        return <div><Crud {...this.props} Schema={this.getSchema()} />{DemoteConfirmation}</div>;
+        return <Crud {...this.props} Schema={this.getSchema()} />;
     }
 
 });

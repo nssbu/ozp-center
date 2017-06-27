@@ -13,6 +13,7 @@ var Modal = require('ozp-react-commons/components/Modal.jsx');
 var _ = require('../../utils/_');
 var uuid = require('../../utils/uuid');
 var { DeleteConfirmation } = require('../shared/DeleteConfirmation.jsx');
+var { DemoteConfirmation } = require('../shared/DemoteConfirmation.jsx');
 var { FOCUSABLE_ELEMENTS } = require('ozp-react-commons/constants');
 var AjaxMixin = require('../../mixins/AjaxMixin');
 var humps = require('humps');
@@ -115,6 +116,7 @@ var Crud = React.createClass({
             adding: false,
             editing: false,
             deleting: false,
+            demoting: false,
             records: [],
             formState: null
         };
@@ -127,6 +129,7 @@ var Crud = React.createClass({
                 { this.state.adding && this.renderCreateForm() }
                 { this.state.editing && this.renderEditForm() }
                 { this.state.deleting && this.renderDeleteConfirmation() }
+                { this.state.demoting && this.renderDemoteConfirmation() }
             </div>
         );
     },
@@ -208,7 +211,7 @@ var Crud = React.createClass({
         return (
             <DemoteConfirmation ref="modal" kind={ kind } title={ title }
                 errorMessage={this.state.errorMessage}
-                onHidden={this.resetState} onDelete={this.onDelete} />
+                onHidden={this.resetState} onDemote={this.onDemote} />
         );
     },
 
@@ -300,7 +303,7 @@ var Crud = React.createClass({
     },
 
     onDemote: function () {
-        if (newGrid.records.length <= 1){
+        if (this.grid.records.length <= 1){
             w2alert('There must be at least one Steward.');
         }
         else{
@@ -348,7 +351,8 @@ var Crud = React.createClass({
                 toolbarDelete: true,
                 toolbarSearch: false,
                 toolbarReload: false,
-                toolbarColumns: false
+                toolbarColumns: false,
+                toolbarDemote: true
             },
             buttons: {
                 add: {
@@ -359,6 +363,9 @@ var Crud = React.createClass({
                 },
                 delete: {
                     icon: 'icon-trash-grayDark'
+                },
+                demote: {
+                    icon: 'icon-delete-grayDark'
                 }
             },
             url : this.props.url,
@@ -389,15 +396,19 @@ var Crud = React.createClass({
             },
             onAdd: (event) => {
                 event.preventDefault();
-                this.setState({ adding: true, editing: false, deleting: false });
+                this.setState({ adding: true, editing: false, deleting: false, demoting: false });
             },
             onEdit: (event) => {
                 event.preventDefault();
-                this.setState({ adding: false, editing: true, deleting: false });
+                this.setState({ adding: false, editing: true, deleting: false, demoting: false });
             },
             onDelete: (event) => {
                 event.preventDefault();
-                this.setState({ adding: false, editing: false, deleting: true });
+                this.setState({ adding: false, editing: false, deleting: true, demoting: false });
+            },
+            onDemote: (event) => {
+                event.preventDefault();
+                this.setState({ adding: false, editing: false, deleting: false, demoting: true });
             }
         }, this.props.grid);
 
