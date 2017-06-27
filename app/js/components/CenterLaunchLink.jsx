@@ -64,25 +64,25 @@ var CenterLaunchLink = React.createClass({
         var launchWarning = this.state.launchModal;
         var requirements = this.props.listing.requirements;
         var launchModal = requirements != '' && requirements.toLowerCase() != 'none'
-          ? (<Modal ref="modal" className="LaunchConfirmation" size="small" title="Launch Requirements Notice" onCancel={this.modalConfimation}>
-            <strong>
-                <p>Please review the requirements below if you have problems launching <b>{this.props.listing.title}</b></p>
-                <br/>
-                <p>{this.props.listing.requirements}</p>
-                <br/>
-                <p>This dialog box will close automatically after 10 seconds</p>
-            </strong>
-            <button className="btn btn-danger" onClick={this.modalConfimation}>OK</button>
-        </Modal>) : null;
+            ? (<Modal ref="modal" className="LaunchConfirmation" size="small" title="Launch Requirements Notice" onCancel={this.modalConfimation}>
+                  <strong>
+                      <p>Please review the requirements below if you have problems launching <b>{this.props.listing.title}</b></p>
+                      <br/>
+                      <p>{this.props.listing.requirements}</p>
+                      <br/>
+                      <p>This dialog box will close automatically after 10 seconds</p>
+                  </strong>
+                  <button className="btn btn-danger" onClick={this.modalConfimation}>OK</button>
+              </Modal>)
+          : null;
 
         return (
             <div style={{float: 'left'}}>
-              <button ref="tooltipped" data-toggle="tooltip" data-placement="top" alt="Click to launch this app" title="Launch" { ...otherProps } className={linkClassName}
-                      onClick={this.launchClick}>
-                  <i className="icon-open-grayDark" /><span className="hidden-span">Launch</span>
-
-              </button>
-              {launchWarning ? launchModal : null}
+                <button ref="tooltipped" data-toggle="tooltip" data-placement="top" alt="Click to launch this app" title="Launch" { ...otherProps } className={linkClassName}
+                        onClick={this.launchClick}>
+                    <i className="icon-open-grayDark" /><span className="hidden-span">Launch</span>
+                </button>
+                {launchWarning ? launchModal : null}
             </div>
         );
     }
