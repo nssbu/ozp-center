@@ -13,7 +13,7 @@ function getState(profileData) {
     var profile = profileData.currentUser,
         launchInWebtop = profile ? profile.launchInWebtop : false;
 
-    return {launchInWebtop: launchInWebtop, launchModal: false};
+    return {launchInWebtop: launchInWebtop, launchModal: false, timeout: null};
 }
 
 /**
@@ -48,13 +48,12 @@ var CenterLaunchLink = React.createClass({
         var me = this;
         me.setState({'launchModal': true});
 
-        setTimeout(function(){
-            me.setState({'launchModal': false});
-        }, 10000);
+        me.setState({'timeout' : setTimeout(me.modalConfirmation, 10000)});
     },
 
-    modalConfimation: function(){
+    modalConfirmation: function(){
         this.setState({'launchModal': false});
+        clearTimeout(this.state.timeout);
     },
 
     render: function() {
@@ -64,15 +63,15 @@ var CenterLaunchLink = React.createClass({
         var launchWarning = this.state.launchModal;
         var requirements = this.props.listing.requirements;
         var launchModal = requirements != '' && requirements.toLowerCase() != 'none'
-            ? (<Modal ref="modal" className="LaunchConfirmation" size="small" title="Launch Requirements Notice" onCancel={this.modalConfimation}>
+            ? (<Modal ref="modal" className="LaunchConfirmation" size="small" title="Launch Requirements Notice" onCancel={this.modalConfirmation}>
                   <strong>
                       <p>Please review the requirements below if you have problems launching <b>{this.props.listing.title}</b></p>
                       <br/>
                       <p>{this.props.listing.requirements}</p>
                       <br/>
-                      <p>This dialog box will close automatically after 10 seconds</p>
                   </strong>
-                  <button className="btn btn-danger" onClick={this.modalConfimation}>OK</button>
+                  <p>This dialog box will close automatically after 10 seconds</p>
+                  <button className="btn btn-danger" onClick={this.modalConfirmation}>OK</button>
               </Modal>)
           : null;
 
