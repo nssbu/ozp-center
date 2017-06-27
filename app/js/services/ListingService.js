@@ -210,6 +210,11 @@ ListingActions.deleteReview.listen(function (listing, review) {
 ListingActions.launch.listen(function (listing) {
     OzpAnalytics.trackEvent('Applications', listing.title, listing.agencyShort);
     window.open(listing.launchUrl);
+/*
+    if(listing.requirements != ''){
+        alert('Note: If you have problems accessing this site, please review the requirements - ' + listing.requirements);
+    }
+*/
 });
 
 ListingActions.save.listen(function (data) {
