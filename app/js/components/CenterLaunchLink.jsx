@@ -48,7 +48,7 @@ var CenterLaunchLink = React.createClass({
         var me = this;
         me.setState({'launchModal': true});
 
-        me.setState({'timeout' : setTimeout(me.modalConfirmation, 10000)});
+        me.setState({'timeout' : setTimeout(me.modalConfirmation, 30000)});
     },
 
     modalConfirmation: function(){
@@ -65,12 +65,12 @@ var CenterLaunchLink = React.createClass({
         var launchModal = requirements != '' && requirements.toLowerCase() != 'none'
             ? (<Modal ref="modal" className="LaunchConfirmation" size="small" title="Launch Requirements Notice" onCancel={this.modalConfirmation}>
                   <strong>
-                      <p>Please review the requirements below if you have problems launching <b>{this.props.listing.title}</b></p>
+                      <p>Please review the requirements below if you have problems launching <b>{this.props.listing.title}</b>:</p>
                       <br/>
                       <p>{this.props.listing.requirements}</p>
                       <br/>
                   </strong>
-                  <p>This dialog box will close automatically after 10 seconds</p>
+                  <p>This dialog box will close automatically after 30 seconds.</p>
                   <button className="btn btn-danger" onClick={this.modalConfirmation}>OK</button>
               </Modal>)
           : null;
