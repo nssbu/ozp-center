@@ -14,7 +14,6 @@ var ListingActions = require('../../actions/ListingActions');
 var _ = require('../../utils/_');
 
 var DemoteConfirmation = React.createClass({
-
     propTypes: {
         errorMessage: React.PropTypes.string,
         onHidden: React.PropTypes.func,
@@ -22,6 +21,7 @@ var DemoteConfirmation = React.createClass({
     },
 
     getDefaultProps: function () {
+      console.log("afgsdf");
         return {
             onHidden: _.noop
         };
@@ -33,6 +33,7 @@ var DemoteConfirmation = React.createClass({
     },
 
     render: function () {
+        console.log('HEREEEE');
         var kind = this.props.kind,
             title = this.props.title,
             onDemote = this.props.onDemote,

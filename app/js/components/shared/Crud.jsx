@@ -194,6 +194,7 @@ var Crud = React.createClass({
     },
 
     renderDeleteConfirmation: function () {
+    console.log("delete");
         var kind = this.props.title.toLowerCase();
         var title = this.props.getDisplayName(this.getSelectedRecord());
 
@@ -205,6 +206,7 @@ var Crud = React.createClass({
     },
 
     renderDemoteConfirmation: function () {
+    console.log("demote");
         var kind = this.props.title.toLowerCase();
         var title = this.props.getDisplayName(this.getSelectedRecord());
 
@@ -277,7 +279,7 @@ var Crud = React.createClass({
         if (data.stewardedOrganizations && data.stewardedOrganizations[0]) {
           data = this.props.structStewardOrgs(data);
         }
-
+        console.log(this);
 
         return $.ajax({
             url: `${this.getUrlWithoutParams()}/${id}/`,
@@ -303,26 +305,18 @@ var Crud = React.createClass({
     },
 
     onDemote: function () {
-        if (this.grid.records.length <= 1){
-            w2alert('There must be at least one Steward.');
-        }
-        else{
-            var newUserInfo = {"stewardedOrganizations": [],
-            "user":{"groups":[{"name":"USER"}]}
-            };
+        var id = this.getSelectedId();
+        $.ajax({
+            type: 'PUT',
+            url: API_URL + `/api/profile/${userID}/`,
+            data: JSON.stringify(humps.decamelizeKeys(newUserInfo)),
+            contentType: 'application/json'
+        })
 
-            $.ajax({
-                type: 'PUT',
-                url: API_URL + `/api/profile/${userID}/`,
-                data: JSON.stringify(humps.decamelizeKeys(newUserInfo)),
-                contentType: 'application/json'
-            })
-
-            //To ensure changes are finished before updating the grid
-            setTimeout(function(){
-                w2ui['grid'].reload();
-            }, 100);
-        }
+        //To ensure changes are finished before updating the grid
+        setTimeout(function(){
+            w2ui['grid'].reload();
+        }, 100);
     },
 
     reload: function () {
@@ -352,7 +346,7 @@ var Crud = React.createClass({
                 toolbarSearch: false,
                 toolbarReload: false,
                 toolbarColumns: false,
-                toolbarDemote: true
+                demoteButton: false
             },
             buttons: {
                 add: {

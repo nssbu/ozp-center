@@ -73,6 +73,7 @@ var Stewards = React.createClass({
                     ],
                     onClick: function (target, data) {
                         data.onComplete = function(){
+                        console.log(data.target);
                             var newGrid = this.owner;
                             var userID = newGrid.getSelection()[0];
                             var userInfo = newGrid.get(userID)
@@ -87,37 +88,26 @@ var Stewards = React.createClass({
                             if (data.target === 'demoteButton') {
                                 w2confirm('Are you sure you want to remove ' + username + ' from Stewards?')
                                     .yes(function () {
-//                                        if (newGrid.records.length <= 1){
-//                                            w2alert('There must be at least one Steward.');
-//                                        }
-//                                        else{
-                                            var newUserInfo = {"stewardedOrganizations": [],
-                                            "user":{"groups":[{"name":"USER"}]}
-                                            };
+                                        var newUserInfo = {"stewardedOrganizations": [],
+                                        "user":{"groups":[{"name":"USER"}]}
+                                        };
 
-                                            $.ajax({
-                                                type: 'PUT',
-                                                url: API_URL + `/api/profile/${userID}/`,
-                                                data: JSON.stringify(humps.decamelizeKeys(newUserInfo)),
-                                                contentType: 'application/json'
-                                            })
+                                        $.ajax({
+                                            type: 'PUT',
+                                            url: API_URL + `/api/profile/${userID}/`,
+                                            data: JSON.stringify(humps.decamelizeKeys(newUserInfo)),
+                                            contentType: 'application/json'
+                                        })
 
-                                            //To ensure changes are finished before updating the grid
-                                            setTimeout(function(){
-                                                w2ui['grid'].reload();
-                                                w2ui['grid'].toolbar.disable('demoteButton');
-                                            }, 100);
-//                                        }
+                                        //To ensure changes are finished before updating the grid
+                                        setTimeout(function(){
+                                            w2ui['grid'].reload();
+                                            w2ui['grid'].toolbar.disable('demoteButton');
+                                        }, 100);
                                     });
-//                                    <DemoteConfirmation ref="modal" kind={ "steward" } title={ username }
-//                                        errorMessage={newGrid.state.errorMessage}
-//                                        onHidden={newGrid.resetState} onDemote={newGrid.onDemote} />
-
-                                      {DemoteConfirmation}
                             }
                         }
                     }
-
                 },
 
                 columns: [
@@ -126,12 +116,16 @@ var Stewards = React.createClass({
                     { field: 'stewardedOrganizations', caption: 'Steward Organizations', size: '33%'}
                 ],
                 onSelect: function (event) {
-                    console.log(this.toolbar.owner);
-                    if (this.toolbar.owner.records.length > 1)
+                    if (this.records.length > 1)
                         w2ui['grid'].toolbar.enable('demoteButton');
                 },
                 onUnselect: function (event) {
                     w2ui['grid'].toolbar.disable('demoteButton');
+                },
+                onLoad: function (target, data) {
+                    data.onComplete = function() {
+                        w2ui['grid'].toolbar.disable('demoteButton');
+                    }
                 },
                 show: {
                     toolbar: true,
@@ -141,7 +135,6 @@ var Stewards = React.createClass({
                     toolbarSearch: false,
                     toolbarReload: false,
                     toolbarColumns: false,
-                    demoteButton: true
                 }
             }
         };
