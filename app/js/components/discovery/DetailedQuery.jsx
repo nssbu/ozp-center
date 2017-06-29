@@ -7,15 +7,17 @@ var ErrorActions = require('ozp-react-commons/actions/ErrorActions');
 var ErrorStore = require('ozp-react-commons/stores/ErrorStore');
 var ErrorWindow = require('ozp-react-commons/components/error/ErrorWindow.jsx');
 
+var TagSubscriptionActions = require('../../actions/TagSubscriptionActions');
+var TagSubscriptionStore = require('../../stores/TagSubscriptionStore');
+
 var DetailedQuery = React.createClass({
-    mixins: [Reflux.connect(ErrorStore, "errorStoreData")],
+    mixins: [Reflux.connect(ErrorStore, "errorStoreData"), Reflux.connect(TagSubscriptionStore, "tagSubscriptionStore"), Reflux.listenerMixin],
 
     getInitialState: function(){
         ErrorActions.fetchEsStatus();
+        TagSubscriptionActions.fetchSubscriptions();
 
       return {
-        categories: [],
-        tags: []
       };
     },
 
@@ -105,6 +107,7 @@ var DetailedQuery = React.createClass({
     },
 
     getTags: function(){
+
       if(this.props.data.tags.length){
         var prettyTags;
         if(this.props.data.tags.length > 1){
@@ -174,7 +177,41 @@ var DetailedQuery = React.createClass({
       }
     },
 
+    subscribeToTag: function(event) {
+        TagSubscriptionActions.subscribeToTag(this.props.data.tagId[0]);
+        event.stopPropagation();
+    },
+
+    unsubscribeToTag: function(event, tag) {
+        var me = this;
+
+        this.state.tagSubscriptionStore.forEach(function(element) {
+            if (element.entity_id == me.props.data.tagId && element.entity_type === "tag") {
+                TagSubscriptionActions.unsubscribeToTag(element);
+            }
+        });
+        event.stopPropagation();
+    },
+
     render() {
+        var subscribeLink = null;
+        var me = this;
+
+        if (this.state.tagSubscriptionStore)  {
+            let foundSubscription = false;
+            this.state.tagSubscriptionStore.forEach(function(element) {
+                if (element.entity_id == me.props.data.tagId && me.props.data.tagId.length > 0) {
+                    foundSubscription = true;
+                    subscribeLink = <a className="tag_subscribe" onClick={(e) => {me.unsubscribeToTag(e, element)}} >Unsubscribe</a>;
+                }
+            });
+            //last conditional is a fix for subscription store not being null even if it hasn't loaded yet
+            if(this.props.data.tagId.length > 0 && (this.state.tagSubscriptionStore.length === 0 || (!foundSubscription && this.state.tagSubscriptionStore[0].entity_id))){
+                subscribeLink = <a className="tag_subscribe" onClick={(e) => {this.subscribeToTag(e)}} >Subscribe</a>;
+            }
+        }
+
+
         if (this.state.errorStoreData) {
             return (
               <div>
@@ -189,6 +226,7 @@ var DetailedQuery = React.createClass({
                 {this.getOrgs()}
                 {this.getCategories()}
                 {this.getTags()}
+                {subscribeLink}
               </div>
           );
         }

@@ -102,7 +102,6 @@ var Stewards = React.createClass({
                                         //To ensure changes are finished before updating the grid
                                         setTimeout(function(){
                                             w2ui['grid'].reload();
-                                            w2ui['grid'].toolbar.disable('demoteButton');
                                         }, 100);
                                     });
                             }
