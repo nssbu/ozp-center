@@ -5,7 +5,6 @@ var ModalLink = require('../ModalLink.jsx');
 var { Navigation, History } = require('react-router');
 var ActiveStateMixin = require('../../mixins/ActiveStateMixin');
 
-//var ContactsWindow = require('ozp-react-commons/components/contacts/ContactsWindow.jsx');
 var ContactsWindow = require('./notificationsModalLinkN.jsx');
 
 var ListingLink = React.createClass({
