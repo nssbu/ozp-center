@@ -5,7 +5,7 @@ var ModalLink = require('../ModalLink.jsx');
 var { Navigation, History } = require('react-router');
 var ActiveStateMixin = require('../../mixins/ActiveStateMixin');
 
-var ContactsWindow = require('./notificationsModalLinkN.jsx');
+var NMLN = require('./notificationsModalLinkN.jsx');
 
 var ListingLink = React.createClass({
     render: function() {
@@ -26,7 +26,7 @@ var ListingLink = React.createClass({
 /**
  * A simple wrapper around the common ProfileWindow
  */
-var CenterContactsWindow = React.createClass({
+var NML = React.createClass({
     mixins: [ActiveStateMixin, Navigation],
 
     getInitialState: function() {
@@ -39,11 +39,11 @@ var CenterContactsWindow = React.createClass({
 
     render: function() {
         return (
-            <ContactsWindow profileId={this.props.profileId}
+            <NMLN profileId={this.props.profileId}
                 listingLinkEl={ListingLink}
                 backRoute={this.state.backRoute} />
         );
     }
 });
 
-module.exports = CenterContactsWindow;
+module.exports = NML;
