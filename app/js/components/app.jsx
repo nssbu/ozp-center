@@ -10,6 +10,7 @@ var { fetchLibrary } = require('../actions/LibraryActions');
 var Quickview = require('../components/quickview/index.jsx');
 var CenterProfileWindow = require('./profile/CenterProfileWindow.jsx');
 var CenterContactsWindow = require('./contacts/CenterContactsWindow.jsx');
+var NotificationsModal = require('./NavBar/notificationsmodal.jsx');
 var FeedbackModal = require('./management/user/FeedbackModal.jsx');
 var { ListingDeleteConfirmation } = require('./shared/DeleteConfirmation.jsx');
 var { ListingPendingDeleteConfirmation } = require('./shared/PendingDeleteConfirmation.jsx');
@@ -29,7 +30,7 @@ var App = React.createClass({
     },
 
     renderModal: function () {
-        var { listing, profile, contacts, tab, action} = this.getQuery();
+        var { listing, profile, contacts, tab, action, notificationsModal} = this.getQuery();
         if (listing) {
             if (tab) {
                 var preview = action === 'preview';
@@ -53,6 +54,12 @@ var App = React.createClass({
         }
         else if (contacts) {
             return <CenterContactsWindow/>;
+        }
+        else if (contacts) {
+            return <CenterContactsWindow/>;
+        }
+        else if (notificationsModal) {
+            return <NotificationsModal/>;
         }
     },
 
