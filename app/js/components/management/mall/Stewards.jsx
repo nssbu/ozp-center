@@ -9,16 +9,26 @@ var $ = require('jquery');
 var t = require('tcomb-form');
 var { Str, struct, subtype, enums, list } = t;
 var Crud = require('../../shared/Crud.jsx');
-var DemoteConfirmation = require('../../shared/DemoteConfirmation.jsx');
 var { API_URL } = require('ozp-react-commons/OzoneConfig');
 var humps = require('humps');
 var Stewards = React.createClass({
 
     mixins: [ require('../../../mixins/SystemStateMixin') ],
 
+    getInitialState: function () {
+        return {
+            demoting: false
+        };
+    },
+
     getDefaultProps: function () {
 
+        var me = this;
+        //var demoting = false;
+        //console.log(me);
         return {
+            //demoting: false,
+
             title: 'Steward',
             url: API_URL + '/api/profile/?role=ORG_STEWARD',
             getDisplayName: function (selectedRecord) {
@@ -69,11 +79,11 @@ var Stewards = React.createClass({
                 toolbar: {
                     name: 'toolbar',
                     items: [
-                        { type: 'button', id: 'demoteButton', caption: 'Demote', hint: 'Demote a Steward', img: 'icon-delete', disabled: true }
+                        { type: 'button', id: 'demoteButton', caption: 'Remove', hint: 'Remove a user from list of stewards', img: 'icon-delete', disabled: true }
                     ],
                     onClick: function (target, data) {
                         data.onComplete = function(){
-                        console.log(data.target);
+//                        console.log(data.target);
                             var newGrid = this.owner;
                             var userID = newGrid.getSelection()[0];
                             var userInfo = newGrid.get(userID)
@@ -86,24 +96,30 @@ var Stewards = React.createClass({
                             }
 
                             if (data.target === 'demoteButton') {
-                                w2confirm('Are you sure you want to remove ' + username + ' from Stewards?')
-                                    .yes(function () {
-                                        var newUserInfo = {"stewardedOrganizations": [],
-                                        "user":{"groups":[{"name":"USER"}]}
-                                        };
-
-                                        $.ajax({
-                                            type: 'PUT',
-                                            url: API_URL + `/api/profile/${userID}/`,
-                                            data: JSON.stringify(humps.decamelizeKeys(newUserInfo)),
-                                            contentType: 'application/json'
-                                        })
-
-                                        //To ensure changes are finished before updating the grid
-                                        setTimeout(function(){
-                                            w2ui['grid'].reload();
-                                        }, 100);
-                                    });
+                                  //console.log(this.state.demoting);
+                                  //demoting = true;
+                                  //hidden = true;
+                                  me.setState({
+                                      demoting: !me.state.demoting
+                                  });
+//                                w2confirm('Are you sure you want to remove ' + username + ' from Stewards?')
+//                                    .yes(function () {
+//                                        var newUserInfo = {"stewardedOrganizations": [],
+//                                        "user":{"groups":[{"name":"USER"}]}
+//                                        };
+//
+//                                        $.ajax({
+//                                            type: 'PUT',
+//                                            url: API_URL + `/api/profile/${userID}/`,
+//                                            data: JSON.stringify(humps.decamelizeKeys(newUserInfo)),
+//                                            contentType: 'application/json'
+//                                        })
+//
+//                                        //To ensure changes are finished before updating the grid
+//                                        setTimeout(function(){
+//                                            w2ui['grid'].reload();
+//                                        }, 100);
+//                                    });
                             }
                         }
                     }
@@ -154,7 +170,7 @@ var Stewards = React.createClass({
     },
 
     render: function () {
-        return <Crud {...this.props} Schema={this.getSchema()} />;
+        return <Crud {...this.props} Schema={this.getSchema()} demoting={this.state.demoting}/>;
     }
 
 });

@@ -20,15 +20,15 @@ var DemoteConfirmation = React.createClass({
         onDemote: React.PropTypes.func.isRequired
     },
 
-    getDefaultProps: function () {
-      console.log("afgsdf");
-        return {
-            onHidden: _.noop
-        };
-    },
+//    getDefaultProps: function () {
+//      console.log("HIHI");
+//        return {
+//            onHidden: _.noop
+//        };
+//    },
 
     getInitialState: function () {
-      console.log("asdf");
+      console.log("state");
         return {};
     },
 
