@@ -193,7 +193,7 @@ var ContactsWindow = React.createClass({
 
     render: function() {
         return (
-            <Modal modalTitle="Notificationss" ref="modal"
+            <Modal modalTitle="Notifications" ref="modal"
                     className="contacts-window" size="large"
                     onCancel={this.close}>
                 <NotificationsModalInfo/>
