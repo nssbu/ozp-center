@@ -5,7 +5,7 @@ var ModalLink = require('../ModalLink.jsx');
 var { Navigation, History } = require('react-router');
 var ActiveStateMixin = require('../../mixins/ActiveStateMixin');
 
-var NMLN = require('./notificationsModalLinkN.jsx');
+var NotificationsModalLN = require('./notificationsModalLinkN.jsx');
 
 var ListingLink = React.createClass({
     render: function() {
@@ -26,7 +26,7 @@ var ListingLink = React.createClass({
 /**
  * A simple wrapper around the common ProfileWindow
  */
-var NML = React.createClass({
+var NotificationsModalL = React.createClass({
     mixins: [ActiveStateMixin, Navigation],
 
     getInitialState: function() {
@@ -39,11 +39,11 @@ var NML = React.createClass({
 
     render: function() {
         return (
-            <NMLN profileId={this.props.profileId}
+            <NotificationsModalLN profileId={this.props.profileId}
                 listingLinkEl={ListingLink}
                 backRoute={this.state.backRoute} />
         );
     }
 });
 
-module.exports = NML;
+module.exports = NotificationsModalL;
