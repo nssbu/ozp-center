@@ -140,13 +140,19 @@ var NotificationsModal = React.createClass({
       SelfActions.dismissNotification(notification);
     },
 
+    close() {
+      window.history.pushState('', '', '/dist');
+    },
+
     render: function () {
         return (
             <div className="modal fade" role="dialog" aria-hidden="true">
                 <div className="modal-dialog  modal-lg">
                     <div className="modal-content">
                         <div className="modal-header">
-                        <button type="button" className="close" data-dismiss="modal">
+                        <button type="button" className="close" data-dismiss="modal"onClick={() => {
+                          this.close();
+                        }}>
                           <span aria-hidden="true"><i className="icon-cross-16"></i></span><span className="sr-only">Close</span>
                         </button>
                         <h3 className="modal-title">Notifications</h3>

@@ -55,9 +55,6 @@ var App = React.createClass({
         else if (contacts) {
             return <CenterContactsWindow/>;
         }
-        else if (contacts) {
-            return <CenterContactsWindow/>;
-        }
         else if (notificationsModal) {
             return <NotificationsModal/>;
         }
