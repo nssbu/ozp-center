@@ -150,9 +150,9 @@ var NotificationsModal = React.createClass({
                 <div className="modal-dialog  modal-lg">
                     <div className="modal-content">
                         <div className="modal-header">
-                        <button type="button" className="close" data-dismiss="modal"onClick={() => {
-                          this.close();
-                        }}>
+                        <button type="button" className="close" data-dismiss="modal"
+                            onClick={() => { this.close();}}
+                        >
                           <span aria-hidden="true"><i className="icon-cross-16"></i></span><span className="sr-only">Close</span>
                         </button>
                         <h3 className="modal-title">Notifications</h3>
