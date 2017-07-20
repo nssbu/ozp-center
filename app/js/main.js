@@ -23,6 +23,7 @@ var {
   IE_REDIRECT_URL,
   SYSTEM_HIGH_CLASSIFICATION
 } = require('ozp-react-commons/OzoneConfig');
+var redirectingToLogin = false;
 
 
 window.jQuery = jQuery;
@@ -73,6 +74,7 @@ $.ajaxPrefilter(function (options, originalOptions, jqXHR) {
 $(document).ajaxError(function (event, jqxhr, settings, thrownError ) {
     if (settings.url.indexOf('/api/') >= 0 && thrownError === 'FORBIDDEN') {
         window.location = API_URL + '/accounts/login/';
+        redirectingToLogin = true;
     }
 });
 
@@ -94,17 +96,19 @@ SelfStore.listen(_.once(function(profileData) {
     });
 
     Router.run(routes, function (Handler) {
-        var main = document.getElementById('main'),
-            component;
+        if (!redirectingToLogin) {
+            var main = document.getElementById('main'),
+                component;
 
-        if (profileData.currentUser) {
-            component = <Handler />;
-        }
-        else if (profileData.currentUserError) {
-            component = <LoadError error={profileData.currentUserError} />;
-        }
+            if (profileData.currentUser) {
+                component = <Handler />;
+            }
+            else if (profileData.currentUserError) {
+                component = <LoadError error={profileData.currentUserError} />;
+            }
 
-        React.render(component, main);
+            React.render(component, main);
+        }
     });
 }));
 
