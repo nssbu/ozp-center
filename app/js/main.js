@@ -44,7 +44,7 @@ var getCookie = function(cookieName) {
         var cookies = document.cookie.split(';');
 
         $.each(cookies, function(index, cookie) {
-            var cookie = $.trim(cookie);
+            cookie = $.trim(cookie);
 
             // Does this cookie string begin with the cookieName we want?
             if (cookie.substring(0, cookieName.length + 1) === (cookieName + '=')) {
