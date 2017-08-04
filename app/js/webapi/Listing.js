@@ -289,7 +289,7 @@ var ListingApi = {
     getRecommendedListings: function() {
         return $.getJSON(API_URL + '/api/storefront/recommended/').then(
             resp => {
-                return _.map(resp.recommended, this.recommended);
+                return _.map(resp.recommended, this.newListing);
             });
     },
 
