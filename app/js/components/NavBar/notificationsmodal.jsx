@@ -100,7 +100,7 @@ var NotificationsModal = React.createClass({
               }
               { n.notificationType === "peer_bookmark" &&
                 <div>
-                  <p className="message small">{n.author.user.username} has shared a the folder <b>{n.peer.folderName}</b> with you.</p>
+                  <p className="message small">{n.author.user.username} has shared a folder <b>{n.peer.folderName}</b> with you.</p>
                   <p className="message small">{n.message}</p>
                   <div>
                     <button className="btn btn-default btn-sm" onClick={() => {
