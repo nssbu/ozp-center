@@ -22,9 +22,8 @@ var NotificationWindow = React.createClass({
     },
 
     render: function() {
-        console.log('rendering window')
         return (
-            <NotificationsModal backRoute={this.state.backRoute} />
+            <NotificationsModal backRoute={this.state.backRoute} onHidden={this.props.onHidden}/>
         );
     }
 });

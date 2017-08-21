@@ -110,7 +110,7 @@ var NavBar = React.createClass({
                     this.state.showHelp && <HelpModal onHidden={this.onModalHidden} />
                 }
                 {
-                    this.state.showNotifications && <NotificationWindow />
+                    this.state.showNotifications && <NotificationWindow onHidden={this.onModalHidden} />
                 }
             </nav>
         );
@@ -129,10 +129,7 @@ var NavBar = React.createClass({
     },
 
     showNotificationsModal: function () {
-        console.log(this.state.showNotifications)
         this.setState({ showNotifications: true });
-        console.log(this.state.showNotifications)
-        
     },
 
     onModalHidden: function () {
