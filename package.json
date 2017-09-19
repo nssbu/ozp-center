@@ -91,7 +91,7 @@
     "eslint": "^1.10.3",
     "eslint-loader": "^1.2.0",
     "exports-loader": "0.6.2",
-    "humps": "git://github.com/nssbu/humps",
+    "humps": "2.0.1",
     "icons": "git://github.com/nssbu/ozp-icons",
     "jquery": "^2.2.0",
     "lodash-amd": "2.4.1",
