@@ -11,8 +11,12 @@ gulp.task('dev', ['sass', 'copy', 'config', 'fonts', 'images', 'svg', 'jqueryUnd
 
     // Start a webpack-dev-server
     var server = new WebpackDevServer(webpack(devConfig), {
-        contentBase: "./dist",
-        publicPath: "/assets",
+        //TODO: Pick one of the versions below
+        //AML version
+        publicPath: "/dist/assets",
+        //Vistronix version
+        //contentBase: "./dist",
+        //publicPath: "/assets",
         stats: {
             colors: true
         }
@@ -20,7 +24,8 @@ gulp.task('dev', ['sass', 'copy', 'config', 'fonts', 'images', 'svg', 'jqueryUnd
 
     server.listen(8000, "0.0.0.0", function (err) {
         if(err) throw new gutil.PluginError("webpack-dev-server", err);
-        gutil.log("[webpack-dev-server]", "http://localhost:8000");
+        gutil.log("[webpack-dev-server]", "http://localhost:8000/webpack-dev-server/dist");
+                                  //TODO: ^^^Here^^^, change to just "http://localhost:8000"?
     });
 
     // refresh app on sass, images and html changes
@@ -30,6 +35,7 @@ gulp.task('dev', ['sass', 'copy', 'config', 'fonts', 'images', 'svg', 'jqueryUnd
 
     // refersh app manually
     function reloadApp () {
+        //TODO: Comment out the next line?
         server.io.sockets.emit('ok');
     }
 });

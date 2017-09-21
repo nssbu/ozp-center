@@ -12,6 +12,7 @@ var Stewards = React.createClass({
     mixins: [ require('../../../mixins/SystemStateMixin') ],
 
     getDefaultProps: function () {
+
         return {
             title: 'Steward',
             url: API_URL + '/api/profile/?role=ORG_STEWARD',
@@ -64,11 +65,12 @@ var Stewards = React.createClass({
                     { field: 'username', caption: 'Username', size: '33%' },
                     { field: 'stewardedOrganizations', caption: 'Steward Organizations', size: '33%'}
                 ],
+
                 show: {
                     toolbar: true,
                     toolbarAdd: false,
                     toolbarEdit: true,
-                    toolbarDelete: false,
+                    toolbarDelete: true, //TODO: This used to be `false`. Switch back?
                     toolbarSearch: false,
                     toolbarReload: false,
                     toolbarColumns: false
@@ -92,7 +94,7 @@ var Stewards = React.createClass({
     },
 
     render: function () {
-        return <Crud {...this.props} Schema={this.getSchema()} />;
+        return <Crud {...this.props} removeUser={true} Schema={this.getSchema()} />;
     }
 
 });
