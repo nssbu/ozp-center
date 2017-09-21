@@ -18,7 +18,7 @@ var SelfStore = require('ozp-react-commons/stores/SelfStore');
 var ProfileActions = require('ozp-react-commons/actions/ProfileActions');
 var LoadError = require('ozp-react-commons/components/LoadError.jsx');
 var {
-  API_URL,
+  METRICS_URL,
   APP_TITLE,
   IE_REDIRECT_URL,
   SYSTEM_HIGH_CLASSIFICATION
@@ -113,6 +113,35 @@ SelfStore.listen(_.once(function(profileData) {
 }));
 
 ProfileActions.fetchSelf();
+
+//TODO: Should Piwik be initialized?
+//      If yes, then uncomment the block below.
+//      If no, delete the block below.
+/*
+(function initPiwik() {
+    var _paq = window._paq || [];
+    _paq.push(['trackPageView']);
+    _paq.push(['enableLinkTracking']);
+
+    (function() {
+        var d = document,
+            g = d.createElement('script'),
+            s = d.getElementsByTagName('script')[0],
+            u = METRICS_URL;
+
+        _paq.push(['setTrackerUrl', u+'piwik.php']);
+        _paq.push(['setSiteId', 1]);
+
+        g.type='text/javascript';
+        g.async=true;
+        g.defer=true;
+        g.src=u+'piwik.js';
+        s.parentNode.insertBefore(g,s);
+    })();
+
+    window._paq = _paq;
+})();
+*/
 
 require('tour');
 require('./tour/tour.js');

@@ -24,7 +24,10 @@ var ListInput = React.createClass({
                     key: `${index}.${this.context.lastUpdate}`,
                     path: this.props.path.concat(index),
                     count: index,
-                    baseKey: `${index}`
+                    total: items.length,
+                    baseKey: `${index}`,
+                    reorderDownHandler: this.onReorderDown.bind(null, index),
+                    reorderUpHandler: this.onReorderUp.bind(null, index)
                 });
 
             return <this.props.itemForm {...props} />;

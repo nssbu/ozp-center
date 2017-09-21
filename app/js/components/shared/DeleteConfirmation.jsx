@@ -18,6 +18,7 @@ var DeleteConfirmation = React.createClass({
     propTypes: {
         errorMessage: React.PropTypes.string,
         onHidden: React.PropTypes.func,
+        onCancel: React.PropTypes.func,
         onDelete: React.PropTypes.func.isRequired
     },
 
@@ -35,10 +36,26 @@ var DeleteConfirmation = React.createClass({
         var kind = this.props.kind,
             title = this.props.title,
             onDelete = this.props.onDelete,
+            onCancel = this.props.onCancel,
             errorMessage = this.props.errorMessage;
+        var content = <div>
+        <strong>
+            Are you sure that you would like to delete the {kind}{title}?
+        </strong>
+        <button className="btn btn-default" data-dismiss="modal" onClick={onCancel}>Cancel</button>
+        <button className="btn btn-danger" onClick={onDelete}>Delete</button></div>;
+
+        if (errorMessage) {
+            content = <div>
+                <div className="alert alert-danger">{errorMessage}</div>
+                <button className="btn btn-default" data-dismiss="modal">OK</button>
+            </div>;
+        }
 
         return (
             <Modal ref="modal" className="DeleteConfirmation" size="small" onHidden={this.props.onHidden}>
+                {content} <!--this line was added in from AML to replace the block below-->
+                <!--TODO: Delete this block?
                 <button className="close corner" data-dismiss="modal"><i className="icon-cross-16"></i></button>
                 {
                     errorMessage && <div className="alert alert-danger">{errorMessage}</div>
@@ -48,6 +65,7 @@ var DeleteConfirmation = React.createClass({
                 </strong>
                 <button className="btn btn-default" data-dismiss="modal">Cancel</button>
                 <button className="btn btn-danger" onClick={onDelete}>Delete</button>
+                -->
             </Modal>
         );
     },
@@ -89,6 +107,15 @@ var ListingDeleteConfirmation = React.createClass({
     },
 
     onDeleteComplete: function () {
+        sweetAlert({
+            title: "Deletion complete",
+            text: "The listing has been deleted.",
+            type: "info",
+            confirmButtonColor: "#DD6B55",
+            confirmButtonText: "ok",
+            closeOnConfirm: true,
+            html: false
+        });
         this.close();
     },
 
@@ -97,7 +124,7 @@ var ListingDeleteConfirmation = React.createClass({
         if (!listing) {
             return null;
         }
-        var title = listing.title;
+        var title = ' "' + listing.title + '"';
 
         return (
             <DeleteConfirmation ref="modal" kind="listing" title={title}
@@ -111,7 +138,8 @@ var ListingDeleteConfirmation = React.createClass({
     },
 
     close: function () {
-        this.refs.modal.close();
+        if(this.refs.modal)
+            this.refs.modal.close();
         if (this.getActiveRoute().name === 'edit') {
             this.transitionTo('my-listings');
         }

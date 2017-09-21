@@ -19,6 +19,7 @@ var Toggle = React.createClass({
           <div id={this.props.id}>
               <label className="switchLabel">{this.props.label}</label><br />
               <p className="small">{this.props.description}</p>
+              
               <label className="createEditSwitch">
                   <input ref="checkbox"
                          type="checkbox"
@@ -29,6 +30,15 @@ var Toggle = React.createClass({
                       <div className="knob"></div>
                   </div>
               </label>
+
+             <!-- TODO: Replace above block with this?
+             <input ref="checkbox" type="checkbox" className="switch-checkbox" id={this.props.toggleId} defaultChecked={this.props.value} onChange={()=>{this.handleToggle();}}/>
+             <label className=" switch switch-label" htmlFor={this.props.toggleId}>
+                 <span className="switch-inner"></span>
+                 <span className="switch-slider"></span>
+             </label>
+             -->
+
               <p className="switchExplain">{fullExplanation}</p>
           </div>
       );

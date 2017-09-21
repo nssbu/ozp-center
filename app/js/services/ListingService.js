@@ -64,8 +64,8 @@ ListingActions.fetchAllListingsAtOnce.listen(function (filter) {
         });
 
         _.assign(opts, {
-            offset: 0,
-            limit: 999
+            offset: filter.offset || 0,
+            limit: filter.limit || 999
         });
     }
 
@@ -107,8 +107,32 @@ ListingActions.fetchAllChangeLogs.listen(function (profile, filter) {
         });
 });
 
-ListingActions.fetchStorefrontListings.listen(function() {
+ListingActions.fetchStorefrontListings.listen(function() { //deprecated
     ListingApi.getStorefrontListings().then(ListingActions.fetchStorefrontListingsCompleted);
+});
+
+ListingActions.fetchFeaturedListings.listen(function() {
+    ListingApi.getFeaturedListings()
+        .then(ListingActions.fetchFeaturedListingsCompleted)
+        .fail(ListingActions.fetchFeaturedListingsFailed);
+});
+
+ListingActions.fetchRecentListings.listen(function() {
+    ListingApi.getRecentListings()
+        .then(ListingActions.fetchRecentListingsCompleted)
+        .fail(ListingActions.fetchRecentListingsFailed);
+});
+
+ListingActions.fetchMostPopularListings.listen(function() {
+    ListingApi.getMostPopularListings()
+        .then(ListingActions.fetchMostPopularListingsCompleted)
+        .fail(ListingActions.fetchMostPopularListingsFailed);
+});
+
+ListingActions.fetchRecommendedListings.listen(function() {
+    ListingApi.getRecommendedListings()
+    .then(ListingActions.fetchRecommendedListingsCompleted)
+    .fail(ListingActions.fetchRecommendedListingsFailed);
 });
 
 ListingActions.fetchById.listen(function (id) {
@@ -145,16 +169,40 @@ ListingActions.fetchById.listen(function (id) {
     });
 })();
 
+ListingActions.fetchChangeLogs.listen(function (listingId, filter) {
+  var PaginatedChangeLogByIDStore = require('../stores/PaginatedChangeLogByIDStore');
 
-ListingActions.fetchChangeLogs.listen(function (listingId) {
-    ListingApi.getChangeLogs(listingId)
-        .then(ListingActions.fetchChangeLogsCompleted.bind(null, listingId));
+  var paginatedList = PaginatedChangeLogByIDStore.getChangeLogsByID(),
+      opts = {},
+      nextLink;
+
+  if (paginatedList) {
+      paginatedList.expectPage();
+      nextLink = paginatedList.nextLink;
+  }
+  else {
+      _.assign(opts, {
+          offset: 0,
+          limit: PAGINATION_MAX
+      });
+  }
+
+  ListingApi
+      .getChangeLogs(listingId, nextLink, opts)
+      .then(function (response) {
+          ListingActions.fetchAllChangeLogsByIDCompleted(filter, response);
+      });
 });
 
 
 ListingActions.fetchOwnedListings.listen(function (profile) {
     ListingApi.getOwnedListings(profile).then(ListingActions.fetchOwnedListingsCompleted);
 });
+
+ListingActions.fetchSimilar.listen(function (listingId) {
+    ListingApi.getSimilarListings(listingId)
+        .then(ListingActions.fetchSimilarCompleted.bind(null, listingId));
+})
 
 
 ListingActions.fetchReviews.listen(function (listing) {
@@ -183,6 +231,19 @@ ListingActions.deleteReview.listen(function (listing, review) {
         .fail(_.partial(ListingActions.deleteReviewFailed, listing, review));
 });
 
+ListingActions.saveReviewResponse.listen(function (listing, review) {
+    ListingApi.saveReviewResponse(listing.id, review)
+        .then(function (response) {
+            ListingActions.fetchById(listing.id);
+            ListingActions.fetchReviews(listing);
+            ListingActions.saveReviewResponseCompleted(listing, response);
+            OzpAnalytics.trackListingReview(listing.title, listing.agencyShort);
+        })
+        .fail(function(response) {
+            ListingActions.saveReviewResponseFailed(response);
+        });
+});
+
 ListingActions.launch.listen(function (listing) {
     OzpAnalytics.trackEvent('Applications', listing.title, listing.agencyShort);
     window.open(listing.launchUrl);
@@ -198,7 +259,7 @@ ListingActions.save.listen(function (data) {
     ListingApi
         .save(data)
         .then(ListingActions.saveCompleted.bind(null, isNew))
-        .then(ListingActions.listingChangeCompleted)
+        .then(ListingActions.listingChangeCompleted(data))
         .fail(ListingActions.saveFailed);
 });
 
@@ -214,6 +275,17 @@ ListingActions.disable.listen(setEnabled.bind(null, false));
 ListingActions.enableBookmarked.listen(setEnabledBookmarked.bind(null, true));
 ListingActions.disableBookmarked.listen(setEnabledBookmarked.bind(null, false));
 
+ListingActions.pendingDelete.listen(function (listing) {
+    //OzpAnalytics.trackListingApproval(listing.title, listing.agencyShort);
+    var data = _.cloneDeep(listing);
+    data.approvalStatus = "PENDING_DELETION";
+    data.isEnabled=false;
+    ListingApi.save(data)
+    .then(ListingActions.pendingDeleteCompleted.bind(null, data))
+    .then(ListingActions.listingChangeCompleted(data))
+    .fail(ListingActions.pendingDeleteFailed)
+});
+
 ListingActions.approve.listen(function (listing) {
     OzpAnalytics.trackListingApproval(listing.title, listing.agencyShort);
     updateListingProperty('approvalStatus', 'APPROVED', listing);
@@ -224,11 +296,27 @@ ListingActions.approveByOrg.listen(function (listing) {
     updateListingProperty('approvalStatus', 'APPROVED_ORG', listing);
 });
 
+ListingActions.undelete.listen(function (listing) {
+    //OzpAnalytics.trackListingApproval(listing.title, listing.agencyShort);
+    //updateListingProperty('approvalStatus', 'PENDING', listing);
+    var data = _.cloneDeep(listing);
+    data.approvalStatus = "PENDING";
+    data.isEnabled=true;
+    ListingApi.save(data)
+    .then(ListingActions.undeleteCompleted.bind(null, data))
+    .then(ListingActions.listingChangeCompleted(data))
+    .fail(ListingActions.pendingDeleteFailed)
+});
+
 ListingActions.deleteListing.listen(function (listing) {
+    listing.isEnabled = false;
+    listing.status = 'DELETED';
+    listing.approvalStatus = 'DELETED';
     ListingApi.del(listing.id)
         .then(ListingActions.deleteListingCompleted.bind(null, listing))
-        .then(ListingActions.listingChangeCompleted)
+        .then(ListingActions.listingChangeCompleted(listing))
         .fail(ListingActions.deleteListingFailed);
+
 });
 
 ListingActions.setFeatured.listen(updateListingProperty.bind(null, 'isFeatured'));
