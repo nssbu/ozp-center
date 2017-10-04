@@ -37,6 +37,10 @@ var CreateNotification = React.createClass({
         };
     },
 
+    componentWillReceiveProps(nextProps){
+        this.setState({message: nextProps.message});
+    },
+
     onReset(event) {
         if (event) {
             event.preventDefault();
@@ -49,6 +53,8 @@ var CreateNotification = React.createClass({
             hour: '00',
             minute: '00'
         });
+
+        this.props.fn('');
     },
 
     onExpiresDateChange(date) {
@@ -101,7 +107,7 @@ var CreateNotification = React.createClass({
                         </div>
                         <div className="col-md-6">
                             <div className="form-group">
-                                <label>Expires At (Zulu Time)</label>
+                                <label>Expires At (Z)</label>
                                 <div>
                                     <Select ref="hour" name="hour" options={ this.props.hours } valueLink={ this.linkState('hour') } />
                                     <Select ref="minute" name="minute" options={ this.props.minutes } valueLink={ this.linkState('minute') } />

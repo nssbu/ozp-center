@@ -39,6 +39,7 @@ var DetailsTab = React.createClass({
         var versionNumber = this.props.listing.versionName;
         var categories = this.props.listing.categories.join(', ');
         var tags = this.props.listing.tags;
+        var tagsObject = this.props.listing.tagsObject;
         var requirements = this.props.listing.requirements;
 
         return (
@@ -68,7 +69,7 @@ var DetailsTab = React.createClass({
                         <p>
                             <p><label>Type:</label><span> { type }</span></p>
 
-                            <p className="forceWrap"><label>URL:</label><span> <a className="forceWrap" href={URL}>{ URL }</a></span></p>
+                            <p className="forceWrap"><label>URL:</label><span> <a className="forceWrap" href={URL} target="_blank">{ URL } </a></span></p>
 
                             <p><label>Categories:</label><span> { categories ? categories : <EmptyFieldValue inline /> }</span></p>
                             <p className="forceWrap"><label>Tags:</label><span> {this.renderTags(this) }</span></p>
@@ -95,22 +96,13 @@ var DetailsTab = React.createClass({
     },
 
     renderTags:function(that){
-        var tags= that.props.listing.tags;
-        return tags.map(function (tags) {
-          var URL= CENTER_URL + '#/home/' + tags;
+        var tags = that.props.listing.tagsObject;
+        return tags.map(function (tags, i) {
+          var URL= CENTER_URL + '#/home/////' + tags.name + '/' + tags.id;
           return(
-                       <Link to="home" className='tag' params={{
-                          searchString: tags,
-                          categories: '',
-                          type: '',
-                            org: ''
-                          }} onClick={that.handLinkClick} >{tags}  </Link>
+            <a href={URL} key={`renderTags.${i}`} onClick={function(){window.location.href=URL; window.location.reload();}}>{tags.name} </a>
           );
         });
-    },
-
-    handLinkClick (e) {
-        location.reload();
     },
 
     renderOwners: function () {
@@ -118,7 +110,7 @@ var DetailsTab = React.createClass({
             return owners.map(function (owner, i) {
               if(owner.displayName !== "Masked Display Name"){
                 return (
-                    <p className="listing-owner" key={`renderOwners.${i}`}>
+                    <p className="listing-owner col-xs-offset-1" key={`renderOwners.${i}`}>
                         <span> </span>
                         <ProfileLink profileId={owner.id}>
                             {owner.displayName}
