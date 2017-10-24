@@ -6,18 +6,18 @@ pipeline {
         stage('Install NodeJS and NPM') {
             steps {
                 sh '''
-                  yum update
-                  yum install -y gcc-c++ make
+                  sudo yum update
+                  sudo yum install -y gcc-c++ make
                   curl -sL https://rpm.nodesource.com/setup_5.x | sudo -E bash -
-                  yum install -y nodejs
+                  sudo yum install -y nodejs
                 '''
             }
         }
         stage('Build') {
             steps {
                 sh '''
-                  npm install bower gulp
-                  npm install; npm run build; npm run tarDistDate
+                  sudo npm install bower gulp
+                  sudo npm install; sudo npm run build; sudo npm run tarDistDate
                   mv *.tar.gz center.tar.gz
                 '''
             }
