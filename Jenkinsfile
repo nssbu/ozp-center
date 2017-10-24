@@ -6,10 +6,10 @@ pipeline {
         stage('Install NodeJS and NPM') {
             steps {
                 sh '''
-                  sudo yum update
-                  sudo yum install -y gcc-c++ make
+                  sudo yum -y update
+                  sudo yum -y install gcc-c++ make
                   curl -sL https://rpm.nodesource.com/setup_5.x | sudo -E bash -
-                  sudo yum install -y nodejs
+                  sudo yum -y install nodejs
                 '''
             }
         }
