@@ -27,7 +27,7 @@ pipeline {
             steps {
                 sh '''
                   sudo npm install bower gulp
-                  sudo npm install; sudo npm run build; sudo npm run tarDistDate
+                  npm install; npm run build; npm run tarDistDate
                   mv *.tar.gz center.tar.gz
                 '''
             }
