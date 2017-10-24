@@ -4,7 +4,9 @@ pipeline {
     }
     stages {
         stage('Clear the workspace') {
-            sh 'sudo rm -rf *'
+            steps {
+                sh 'sudo rm -rf *'
+            }
         }
         stage('Install NodeJS and NPM') {
             steps {
