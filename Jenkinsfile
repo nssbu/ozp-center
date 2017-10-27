@@ -8,16 +8,6 @@ pipeline {
                 sh 'sudo rm -rf *'
             }
         }
-        stage('Install NodeJS and NPM') {
-            steps {
-                sh '''
-                  sudo yum -y update
-                  sudo yum -y install gcc-c++ make
-                  curl -sL https://rpm.nodesource.com/setup_5.x | sudo -E bash -
-                  sudo yum -y install nodejs
-                '''
-            }
-        }
         stage('Checkout Repo') {
             steps {
                 git url: 'http://www.github.com/mark-betters-ozp-forks/ozp-center.git', branch: 'master'
