@@ -20,7 +20,8 @@ var Screenshot = struct({
     smallImageId: Num,
     smallImageMarking: NonBlankString(200),
     largeImageId: Num,
-    largeImageMarking: NonBlankString(200)
+    largeImageMarking: NonBlankString(200),
+    description: maybe(StringMax(160))
 });
 
 var Resource = struct({
@@ -50,13 +51,16 @@ var securityMarking = NonBlankString(200),
     contacts = list(Contact),
     docUrls = list(Resource),
     owners = list(User),
-    atLeastOne = l => l.length > 0;
+    atLeastOne = l => l.length > 0,
+    atLeastOneLessThree = l =>l.length > 0 && l.length <= 3;
 
 function getRequiredContactTypes (contactTypes) {
     return contactTypes.filter(t => t.required).map(t => t.name);
 }
 
 function hasRequiredContactTypes (requiredContactTypes, contacts) {
+    if(!contacts)
+        return false;
     return requiredContactTypes.every(type => contacts.some(contact => contact.type === type));
 }
 
@@ -65,7 +69,7 @@ function ListingFull (requiredContactTypes) {
         securityMarking: securityMarking,
         title: title,
         type: type,
-        categories: subtype(categories, atLeastOne),
+        categories: subtype(categories, atLeastOneLessThree),
         tags: subtype(tags, atLeastOne),
         description: NonBlankString(4000),
         descriptionShort: NonBlankString(100),
@@ -96,7 +100,7 @@ var ListingDraft = struct({
     securityMarking: securityMarking,
     title: title,
     type: type,
-    categories: categories,
+    categories: subtype(categories, atLeastOneLessThree),
     tags: tags,
     description: maybe(StringMax(4000)),
     descriptionShort: maybe(StringMax(100)),
@@ -143,6 +147,10 @@ function copyImageValidations(validation) {
 //the following is not neccesarry to correctly validate the listing,
 //but for ensuring certain errors are reflected at the correct path
 function validateContacts(validation, instance) {
+    if(!instance.contacts){
+        validation.errors['contacts'] = true;
+        return;
+    }
     instance.contacts.forEach(function (contact, index) {
         ['secure', 'unsecure'].forEach(function(suffix) {
             var path = `contacts.${index}.${suffix}Phone`;

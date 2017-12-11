@@ -69,6 +69,7 @@ var RecentActivity = React.createClass({
                 'APPROVED_ORG' : 'Review Listing',
                 'REVIEW_EDITED' : 'View',
                 'REVIEW_DELETED' : 'View',
+                'PENDING_DELETION' : 'View'
             };
 
             var href = this.makeHref(this.getActiveRoutePath(), this.getParams(), {
@@ -133,7 +134,6 @@ var RecentActivity = React.createClass({
     render: function () {
         var hasMore = this.state.hasMore || false;
         var logs = this.renderChangeLogs();
-        //console.log(logs);
 
         return (
             <div className="RecentActivity row">

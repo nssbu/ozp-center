@@ -3,7 +3,7 @@
 var React = require('react');
 var UserNotificationDropdown = require('ozp-react-commons/components/notification/UserNotificationDropdown.jsx');
 var HelpModal = require('./helpmodal.jsx');
-var NotificationsModal = require('./notificationsmodal.jsx');
+var NotificationWindow = require('../notification/NotificationWindow.jsx');
 var ProfileLink = require('../profile/ProfileLink.jsx');
 var ModalLink = require('../ModalLink.jsx');
 var { HUD_URL, METRICS_URL, WEBTOP_URL, DEVELOPER_RESOURCES_URL} = require('ozp-react-commons/OzoneConfig');
@@ -50,7 +50,7 @@ var NavBar = React.createClass({
                     <div className="navbar-left">
                         <ul className="nav navbar-nav">
                             <li id="tourstop-hud" className="tooltiped" data-toggle="tooltip" data-placement="bottom" title="HUD"><a className="lrg" href={HUD_URL}><i className="icon-home-grayLightest"></i><span className="hidden-span">HUD</span></a></li>
-                            <li id="tourstop-center" className="active tooltiped" data-toggle="tooltip" data-placement="bottom" title="Center"><a className="lrg" href='#/home' ><i className="icon-shopping-grayLightest activeIcon"></i><span className="hidden-span">Center</span></a></li>
+                            <li id="tourstop-center" className="active tooltiped" data-toggle="tooltip" data-placement="bottom" title="Center"><a className="lrg" href='' ><i className="icon-shopping-grayLightest activeIcon"></i><span className="hidden-span">Center</span></a></li>
                             { !secondParty &&
                               <li id="tourstop-webtop" className="tooltiped" data-toggle="tooltip" data-placement="bottom" title="Webtop"><a className="lrg" href={WEBTOP_URL}><i className="icon-layout-grayLightest"></i><span className="hidden-span">Webtop</span></a></li>
                             }
@@ -110,7 +110,7 @@ var NavBar = React.createClass({
                     this.state.showHelp && <HelpModal onHidden={this.onModalHidden} />
                 }
                 {
-                    this.state.showNotifications && <NotificationsModal onHidden={this.onModalHidden} />
+                    this.state.showNotifications && <NotificationWindow onHidden={this.onModalHidden} />
                 }
             </nav>
         );
@@ -134,7 +134,8 @@ var NavBar = React.createClass({
 
     onModalHidden: function () {
         this.setState({ showHelp: false, showNotifications: false });
-    }
+    },
+  
 
 });
 
