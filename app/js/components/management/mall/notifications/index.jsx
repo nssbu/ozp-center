@@ -96,7 +96,7 @@ var PastNotifications = React.createClass({
             <div>
                 <h4 style={{marginTop: 0}}>Past Notifications</h4>
                 <LoadMore hasMore={this.state.hasMore} onLoadMore={this.fetchMore}>
-                    { PastNotification.fromArray(this.state.notifications, null, true, this.props.fn) }
+                    { PastNotification.fromArray(this.state.notifications) }
                 </LoadMore>
             </div>
         );
@@ -104,27 +104,18 @@ var PastNotifications = React.createClass({
 });
 
 var Notifications = React.createClass({
-    getInitialState() {
-        return {message: ''};
-    },
-
-    updateMessage: function(message){
-      this.setState({message: message});
-    },
 
     render() {
-        var message = this.state.message;
-        var updateMessage = this.updateMessage;
         return (
             <div className="row">
                 <div className="col-md-4 clearfix">
-                    <CreateNotification fn={updateMessage} message={message}/>
+                    <CreateNotification />
                 </div>
                 <div className="col-md-4">
                     <ActiveNotifications />
                 </div>
                 <div className="col-md-4">
-                    <PastNotifications fn={updateMessage}/>
+                    <PastNotifications />
                 </div>
             </div>
         );

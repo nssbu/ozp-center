@@ -173,7 +173,6 @@
         > .react-select-box-label {
             font-size: inherit;
             font-weight: 400;
-            line-height: 19px;
             color: $gray-dark;
 
             & .react-select-box-empty {
@@ -240,7 +239,7 @@
     }
 }
 
-.react-select-box-container.SelectBox__Types.react-select-box-multi.react-select-box-empty.open,
+.react-select-box-container.SelectBox__Types.react-select-box-multi.react-select-box-empty.open, 
 .react-select-box-container.SelectBox__Organizations.react-select-box-multi.react-select-box-empty.open {
     > .react-select-box {
       background: $gray-lightest;
@@ -273,22 +272,4 @@
             @extend .icon-cross-14-blueDark;
         }
     }
-}
-
-.tt-menu {
-  padding: 15px 0px !important;
-}
-
-.tt-suggestion {
-  border-left: 4px solid transparent;
-  padding: 5px 65px;
-}
-
-.tt-suggestion:hover {
-    color:#087399;
-    border-left: 4px solid #009DD3;
-}
-
-.tt-cursor {
-    background-color: #eeeeef;
 }

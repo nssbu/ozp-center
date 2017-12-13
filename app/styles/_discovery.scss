@@ -11,7 +11,6 @@
         color: $gray;
         font-weight: bold;
         font-size: 14pt;
-        display: inline-block;
     }
 
     .facet-group {
@@ -50,24 +49,10 @@
         }
     }
 
-    .tag_subscribe {
-        visibility: visible;
-        cursor: pointer;
-        color: #ecc44d;
-        padding-left: 8px;
-    }
-
-    .divider {
-        padding-left: 8px;
-    }
-
     .sidebar {
 
         li {
             border-left: transparent 5px solid;
-            text-overflow: ellipsis;
-            overflow: hidden;
-            white-space: nowrap;
 
             i.icon-shopping {
                 @extend .icon-shopping-grayDarker;
@@ -80,24 +65,6 @@
 
                 > i.icon-shopping {
                     @extend .icon-shopping-blueDark;
-                }
-
-                > span:first-child {
-                  max-width: 60%;
-                  display: inline-block;
-                  overflow: hidden;
-                  text-overflow: ellipsis;
-                  white-space: nowrap;
-                  height: 23px;
-                }
-
-                > span.subscribe {
-                    visibility: visible;
-                    color: gray;
-                    font-size: 75%;
-                    padding-right: 10px;
-                    right: 0px;
-                    position: absolute;
                 }
             }
 
@@ -116,80 +83,12 @@
                     @extend .icon-shopping-blueDark;
                 }
             }
-
-            > span.subscribe {
-                visibility: hidden;
-            }
         }
     }
 
     > .content {
         padding: 30px;
         min-height: 500px;
-    }
-
-    .sortBy {
-        border: 1px solid #dbdcdd;
-        width: 190px;
-        border-radius: 0;
-        box-shadow: none;
-        height:27px;
-        float: right;
-        display: inline-block;
-        top: 5px;
-
-        > button {
-            padding-top: 4px;
-            height: 27px;
-        }
-
-        > .react-select-box {
-
-            > .react-select-box-label {
-                font-size: inherit;
-                font-weight: 400;
-                line-height: 19px;
-                color: $gray-dark;
-
-                & .react-select-box-empty {
-                    color: $gray-dark;
-                }
-            }
-        }
-
-        > .react-select-box::after {
-            top: 8px;
-        }
-
-        > .react-select-box-options {
-            margin: 0;
-            border-radius: 0;
-            box-shadow: none;
-            border: 0;
-            background: $gray-lightest;
-            width: 100%;
-
-            &:focus {
-                outline: none;
-            }
-        }
-
-        > .react-select-box-clear {
-            top: 20px;
-            background-color: $white;
-
-            &:before{
-                background-color: transparent;
-                @extend .icon-cross-14-grayDark;
-                content: ' ';
-            }
-
-        }
-
-    }
-
-    .resultsDiv {
-        display: inline-block;
     }
 }
 
@@ -200,7 +99,7 @@
     font-weight: normal;
 }
 
-.Discovery__NewArrivals, .Discovery__MostPopular, .Discovery__Recommended {
+.Discovery__NewArrivals, .Discovery__MostPopular {
     margin-top: 40px;
 }
 
@@ -213,35 +112,4 @@
     .SearchListingTile {
         margin-bottom: 0;
     }
-}
-
-.loader {
-    margin: 0 auto;
-    display: block;
-}
-
-.loader-message {
-    text-align: center;
-}
-
-.loader-animate {
-    -animation: spin .9s infinite linear;
-    -ms-animation: spin2 .9s infinite linear;
-    -moz-animation: spin2 .9s infinite linear;
-    -webkit-animation: spin2 .9s infinite linear;
-}
-
-@-webkit-keyframes spin2 {
-    from { -webkit-transform: rotate(0deg);}
-    to { -webkit-transform: rotate(360deg);}
-}
-
-@keyframes spin {
-    from { transform: scale(1) rotate(0deg);}
-    to { transform: scale(1) rotate(360deg);}
-}
-
-@keyframes spin2 {
-    from { transform: scale(1) rotate(0deg);}
-    to { transform: scale(1) rotate(360deg);}
 }

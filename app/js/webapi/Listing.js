@@ -12,13 +12,13 @@ require('sweetalert');
 var FIELDS = [
     'approvedDate', 'id', 'title', 'description', 'descriptionShort', 'screenshots', 'contacts',
     'totalComments', 'avgRate', 'totalRate1', 'totalRate2', 'totalRate3','totalRate4', 'height',
-    'width', 'totalRate5','totalVotes', 'state', 'tags', 'tagsObject', 'type','uuid', 'requirements', 'singleton',
+    'width', 'totalRate5','totalVotes', 'state', 'tags', 'type','uuid', 'requirements', 'singleton',
     'versionName', 'imageLargeUrl', 'imageSmallUrl', 'imageMediumUrl', 'imageXlargeUrl',
     'launchUrl', 'company', 'whatIsNew', 'owners', 'agency', 'agencyShort', 'rejection',
     'isEnabled', 'categories', 'releaseDate', 'editedDate', 'intents', 'docUrls', 'approvalStatus',
     'isFeatured', 'smallIconId', 'largeIconId', 'bannerIconId', 'featuredBannerIconId',
     'currentRejection', 'isPrivate', 'securityMarking', 'smallIconMarking',
-    'largeIconMarking', 'bannerIconMarking', 'featuredBannerIconMarking', 'isBookmarked', 'certIssues'
+    'largeIconMarking', 'bannerIconMarking', 'featuredBannerIconMarking', 'isBookmarked'
 ];
 
 // These don't have the icons, access_control
@@ -37,14 +37,6 @@ function Listing (json) {
     if (!(this instanceof Listing)) {
         throw new Error("This object must be created with new");
     }
-    //if object is already listing do not try to map listing again
-    if (json instanceof Listing)
-        return json;
-    if (json.isExistingListing ){
-        for(var i in json)
-            this[i] = json[i];
-        return this;
-    }
 
     json = json || {};
     json = humps.camelizeKeys(json);
@@ -55,22 +47,25 @@ function Listing (json) {
 
     function viewingExistingListing(json) {
         // This data comes from the API/listing endpoint
-        return json && json.id;
+        return ('listingType' in json);
+    }
+
+    function creatingFreshListing(json) {
+        // Fresh create/edit pages are prepopulated with owner info
+        return ('owners' in json) && !('listingType' in json) && !('type' in json);
     }
 
     if (viewingExistingListing(json)) {
-        this.isExistingListing = true;
         this.type = json.listingType ? json.listingType.title : "";
         this.categories = _.map(json.categories, 'title') || [];
         this.tags = _.map(json.tags, 'name') || [];
-        this.tagsObject = _.map(json.tags) || [];
-        this.agency = json.agency ? json.agency.title : json.agencyTitle || "";
-        this.agencyShort = json.agency ? json.agency.shortName : json.agencyShortName || "";
+        this.agency = json.agency ? json.agency.title : "";
+        this.agencyShort = json.agency ? json.agency.shortName : "";
         this.owners = _.map(json.owners, function (o) {
             return {displayName: o.displayName,
                     id: o.id,
-                    username: o.user ? o.user.username : o.username};
-        }) || [];
+                    username: o.user.username};
+        });
         this.intents = _.map(this.intents, x => x.action);
         _.map(this.contacts, x => x.type = x.contactType.name);
 
@@ -103,30 +98,35 @@ function Listing (json) {
 
         this.uuid = json.uniqueName;
 
-    } else  {
+    } else if (creatingFreshListing(json)) {
         this.owners = _.map(json.owners, function (o) {
             return {displayName: o.displayName,
                     id: o.id,
                     username: o.username};
-        }) || [];
+        });
         this.categories = json.categories || [];
         this.tags = json.tags || [];
-        this.tagsObject = json.tags || [];
         this.agency = json.agency || "";
         this.agencyShort = json.agencyShort || "";
         this.intents = json.intents || [];
         this.contacts = this.contacts || [];
-        this.type = json.type || "";
+
+    } else {
         this.title = json.title || "";
-
-
+        this.type = json.type || "";
+        this.owners = json.owners || [];
+        this.categories = json.categories || [];
+        this.tags = json.tags || [];
+        this.agency = json.agency || "";
+        this.agencyShort = json.agencyShort || "";
+        this.intents = json.intents || [];
+        this.contacts = this.contacts || [];
     }
 
     this.screenshots = this.screenshots || [];
     this.docUrls = this.docUrls || [];
     this.changeLogs = [];
-    this.similar = [];
-    this.isPartialListing = true;
+
     return this;
 }
 
@@ -256,56 +256,22 @@ var ListingApi = {
         return new Listing(listingData);
     },
 
-    getStorefrontListings: function() { //depricated
+    getStorefrontListings: function() {
         return $.getJSON(API_URL + '/api/storefront/').then(
             resp => ({
                 featured: _.map(resp.featured, this.newListing),
                 newArrivals: _.map(resp.recent, this.newListing),
-                mostPopular: _.map(resp.most_popular, this.newListing),
-                recommended: _.map(resp.recommended, this.newListing)
+                mostPopular: _.map(resp.most_popular, this.newListing)
             }));
-    },
-
-    getFeaturedListings: function() {
-        return $.getJSON(API_URL + '/api/storefront/featured/').then(
-            resp => {
-                return _.map(resp.featured, this.newListing);
-            });
-    },
-
-    getRecentListings: function() {
-        return $.getJSON(API_URL + '/api/storefront/recent/').then(
-            resp => {
-                return _.map(resp.recent, this.newListing);
-            });
-    },
-
-    getMostPopularListings: function() {
-        return $.getJSON(API_URL + '/api/storefront/most_popular/').then(
-            resp => {
-                return _.map(resp.most_popular, this.newListing);
-            });
-    },
-
-    getRecommendedListings: function() {
-        return $.getJSON(API_URL + '/api/storefront/recommended/').then(
-            resp => {
-                return _.map(resp.recommended, this.newListing);
-            });
     },
 
     search: function (options) {
         var params = $.param(options, true);
-        return $.getJSON(API_URL + '/api/listings/essearch/?' + params).then(
+        return $.getJSON(API_URL + '/api/listings/search/?' + params).then(
             (response) => {
                 if (options.category && options.category.length > 0) {
                     for(var index = 0; index < options.category.length; index++) {
                         OzpAnalytics.trackCategorization('Categorization', options.category[index], response.count);
-                    }
-                }
-                if (options.tag && options.tag.length > 0) {
-                    for(var tagIndex = 0; tagIndex < options.tag.length; tagIndex++) {
-                        OzpAnalytics.trackCategorization('Tags', options.tag[tagIndex], response.count);
                     }
                 }
 
@@ -314,13 +280,13 @@ var ListingApi = {
                         var queryStringNoStar = options.search.replace(/[*]$/,"");
                         if ((options.type && options.type.length > 0) ||
                             (options.category && options.category.length > 0) ||
-                            (options.tag && options.tag.length > 0) ||
                             (options.agency && options.agency.length > 0)) {
                             queryStringNoStar = queryStringNoStar + ' (+)';
                         }
                         OzpAnalytics.trackSiteSearch('Application Search', queryStringNoStar, response.count);
                     }
                 }, 800);
+
                 response.results = _.map(response.results, this.newListing);
                 return response;
 
@@ -369,13 +335,9 @@ var ListingApi = {
         });
     },
 
-    getChangeLogs: function (id, url, options) {
-        if(!_.isString(url)) {
-                url = API_URL + '/api/listing/' + id + '/activity/?' + $.param(options);
-        }
-
-        return $.getJSON(url).then(
-            (response) => new PaginatedResponse(humps.camelizeKeys(response)));
+    getChangeLogs: function (id) {
+        return $.getJSON(API_URL + '/api/listing/' + id + '/activity/?offset=0&limit=' + PAGINATION_MAX).then(
+            (response) => new PaginatedResponse(humps.camelizeKeys(response)).getItemAsList());
     },
 
     fetchReviews: function (id) {
@@ -389,13 +351,11 @@ var ListingApi = {
         if (review.id) {
             method = 'PUT';
             url += `${review.id}/`;
-            review.author = undefined;
         }
         // default rate to 1 if not specified
         if (!review.rate) {
             review.rate = 1;
         }
-        review.listing= listingId;
 
         return $.ajax({
             type: method,
@@ -410,33 +370,6 @@ var ListingApi = {
         return $.ajax({
             type: 'DELETE',
             url: `${API_URL}/api/listing/${listingId}/review/${reviewId}/`,
-            dataType: 'json',
-            contentType: 'application/json'
-        });
-    },
-
-    saveReviewResponse: function (parentId, review) {
-        var url = `${API_URL}/api/listing/${review.listing.id}/review/`,
-            method = 'POST';
-
-        // default rate to 1 if not specified
-        if (!review.rate) {
-            review.rate = 1;
-        }
-
-        review.review_parent = review.review.id;
-        review.listing = review.listing.id;
-
-        if (review.parentReview) {
-            method = 'PUT';
-            url += `${review.reviewId}/`;
-            review.review_parent = review.parentReview.id;
-        }
-
-        return $.ajax({
-            type: method,
-            url: url,
-            data: JSON.stringify(review),
             dataType: 'json',
             contentType: 'application/json'
         });
@@ -496,13 +429,6 @@ var ListingApi = {
         }
         return $.getJSON(url).then(
             (response) => new PaginatedResponse(humps.camelizeKeys(response)));
-    },
-
-    getSimilarListings: function(listingId) {
-        var url =`${API_URL}/api/listing/${listingId}/similar/`;
-
-        return $.getJSON(url).then(
-            (resp) => _.map(resp, this.newListing));
     }
 };
 

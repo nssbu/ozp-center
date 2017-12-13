@@ -38,8 +38,7 @@ var MyListingsStatusFilter = React.createClass({
             APPROVED_ORG: 0,
             REJECTED: 0,
             PENDING: 0,
-            IN_PROGRESS: 0,
-            PENDING_DELETION: 0
+            IN_PROGRESS: 0
         });
 
 
@@ -48,8 +47,8 @@ var MyListingsStatusFilter = React.createClass({
                 <h4>State</h4>
                 <RadioGroup
                     name="approval-status"
-                    value={this.props.value.approval_status || 'all' }
-                    onChange={ _.partial(this.handleChange, "approval_status") }
+                    value={this.props.value.approvalStatus || 'all' }
+                    onChange={ _.partial(this.handleChange, "approvalStatus") }
                 >
                         <input id="my-listings-filter-all" type="radio" value="all"/>
                         <label htmlFor="my-listings-filter-all" className="label-all">
@@ -85,13 +84,6 @@ var MyListingsStatusFilter = React.createClass({
                             Draft
                             <strong className="badge">{counts.IN_PROGRESS || 0}</strong>
                         </label>
-                        <div className="clear"></div>
-                        <input id="my-listings-filter-pending-delete" type="radio" value="PENDING_DELETION"/>
-                        <label htmlFor="my-listings-filter-pending-delete" className="label-pending-delete">
-                            <i className="icon-delete-12-redOrangeDark" />
-                            Pending Deletion
-                            <strong className="badge">{counts.PENDING_DELETION || 0}</strong>
-                        </label>
                     </RadioGroup>
             </div>
         );
@@ -103,22 +95,16 @@ var MyListings = React.createClass({
     mixins: [
         Router.State,
         Reflux.listenTo(ListingActions.fetchOwnedListingsCompleted, 'onStoreChanged'),
-        Reflux.listenTo(ListingActions.deleteListingCompleted, 'listingRefresh' ),
-        Reflux.listenTo(ListingActions.pendingDeleteCompleted,'listingRefresh' ),
-        Reflux.listenTo(ListingActions.saveCompleted,'listingRefresh' )
+        Reflux.listenTo(ListingActions.deleteListingCompleted, 'onStoreChanged')
     ],
-    listingRefresh: function(){
-      ListingActions.fetchOwnedListings()
-    },
 
     getListings: function () {
         var profile = SelfStore.getDefaultData().currentUser;
-        var listings = GlobalListingStore.getByOwner(profile)
-        return listings;
+        return GlobalListingStore.getByOwner(profile);
     },
 
     getInitialState: function () {
-        var filter = this.getQuery().approval_status || 'all';
+        var filter = this.getQuery().approvalStatus || 'all';
 
         return {
             listings: this.getListings(),
@@ -147,11 +133,11 @@ var MyListings = React.createClass({
     },
 
     render: function () {
-        var filter = this.state.filter || 'all';
+        var filter = this.state.filter || '';
         var listings = this.state.listings || [];
         var filterProps = {
             value: {
-                approval_status: filter
+                approvalStatus: filter
             },
             listings: listings,
             onFilterChanged: this.onFilterChanged

@@ -11,10 +11,7 @@ var Quickview = require('../components/quickview/index.jsx');
 var CenterProfileWindow = require('./profile/CenterProfileWindow.jsx');
 var CenterContactsWindow = require('./contacts/CenterContactsWindow.jsx');
 var FeedbackModal = require('./management/user/FeedbackModal.jsx');
-var NotificationWindow = require('./notification/NotificationWindow.jsx');
 var { ListingDeleteConfirmation } = require('./shared/DeleteConfirmation.jsx');
-var { ListingPendingDeleteConfirmation } = require('./shared/PendingDeleteConfirmation.jsx');
-var { ListingUndeleteConfirmation } = require('./shared/UndeleteConfirmation.jsx');
 
 var App = React.createClass({
 
@@ -30,7 +27,7 @@ var App = React.createClass({
     },
 
     renderModal: function () {
-        var { listing, profile, contacts, tab, action, notifications} = this.getQuery();
+        var { listing, profile, contacts, tab, action} = this.getQuery();
         if (listing) {
             if (tab) {
                 var preview = action === 'preview';
@@ -42,21 +39,12 @@ var App = React.createClass({
             else if (action === 'delete') {
                 return <ListingDeleteConfirmation listing={listing} />;
             }
-            else if (action === 'pending_deletion') {
-                return <ListingPendingDeleteConfirmation listing={listing} />;
-            }
-            else if (action === 'undelete') {
-                return <ListingUndeleteConfirmation listing={listing} />;
-            }
         }
         else if (profile) {
             return <CenterProfileWindow profileId={profile} />;
         }
         else if (contacts) {
             return <CenterContactsWindow/>;
-        }
-        else if (notifications) {
-            return <NotificationWindow />
         }
     },
 

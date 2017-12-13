@@ -39,18 +39,6 @@ var ActionChangeLog = React.createClass({
     }
 });
 
-var PendingDeletionChangeLog = React.createClass({
-    render: function() {
-        var changeLog = this.props.changeLog;
-        return (
-            <div>
-                <AuthorLink author={changeLog.author} />
-                <span> submitted { this.props.listingName } for deletion</span>
-            </div>
-        );
-    }
-});
-
 var SetToChangeLog = React.createClass({
     render: function() {
         var changeLog = this.props.changeLog;
@@ -219,7 +207,6 @@ var ChangeLog = React.createClass({
         'APPROVED_ORG' : OrgApprovalChangeLog,
         'REVIEW_EDITED' : ReviewEditedChangeLog,
         'REVIEW_DELETED' : ReviewDeletedChangeLog,
-        'PENDING_DELETION' : PendingDeletionChangeLog
     },
 
     getListingName: function() {
@@ -253,9 +240,8 @@ var ChangeLog = React.createClass({
             link = this.props.children[1];
         }
 
-        var changeLog = this.props.changeLog;
-        var time = changeLog ? timeAgo(changeLog.activityDate) : null;
-        var Handler = changeLog ? this.actionMapAdmin[changeLog.action] : null;
+        var time = timeAgo(this.props.changeLog.activityDate);
+        var Handler = this.actionMapAdmin[this.props.changeLog.action];
         if(!Handler) {
             Handler = GenericLegacyChangeLog;
         }
@@ -267,7 +253,7 @@ var ChangeLog = React.createClass({
                     </div>
                     <div className={this.props.showListingName ? "col-md-10" : "col-md-9"}>
                         { icon }
-                        { changeLog ? < Handler changeLog={ changeLog } listingName={ this.getListingName() } /> : null }
+                        < Handler changeLog={ this.props.changeLog } listingName={ this.getListingName() } />
                         { link }
                     </div>
                 </div>

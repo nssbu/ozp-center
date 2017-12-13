@@ -73,7 +73,6 @@ var ReviewsTab = React.createClass({
     getState: function () {
         var currentUser = SelfStore.getDefaultData().currentUser;
         var reviews = CurrentListingStore.getReviews();
-
         if (!reviews) {
             return {
                 reviews: reviews,

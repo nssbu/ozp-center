@@ -90,16 +90,14 @@ var EditReview = React.createClass({
     },
 
     isEditingRateAllowed: function () {
-        if (this.state.review.author) {
-            var reviewerId = this.state.review.author.id;
-            var userId = this.props.user.id;
+        var reviewerId = this.state.review.author.id;
+        var userId = this.props.user.id;
 
-            if (reviewerId === userId){
-              return true;
-            }
-            else{
-              return false;
-            }
+        if (reviewerId === userId){
+          return true;
+        }
+        else{
+          return false;
         }
     },
 

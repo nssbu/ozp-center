@@ -20,7 +20,6 @@ var DetailsTab = require('./DetailsTab.jsx');
 var ResourcesTab = require('./ResourcesTab.jsx');
 var AdministrationTab = require('./AdministrationTab.jsx');
 var NotificationsTab = require('./NotificationsTab.jsx');
-var Recommendations = require('./Recommendations.jsx');
 
 var tabs = {
     'overview': OverviewTab,
@@ -118,12 +117,6 @@ var Quickview = React.createClass({
             allowEdit: CurrentListingStore.currentUserCanEdit()
           };
 
-          var recommendationProps = {
-              listing: listing,
-              recommendations: listing ? listing.similar:[],
-              preview: this.props.preview,
-              currentUser: currentUser
-          }
         return (
             <Modal ref="modal" className="quickview" onShown={this.onShown} onHidden={this.onHidden} tabIndex="0">
                 {
@@ -139,8 +132,6 @@ var Quickview = React.createClass({
                             </div>
                         ]
                 }
-                { listing && listing.id && this.props.currentUser.isBetaUser && <Recommendations listing={listing} shown = {shown} key="recommendations" />}
-
             </Modal>
         );
     },
@@ -165,8 +156,8 @@ var Quickview = React.createClass({
             });
 
             return (
-                <li className={className} key={link.to} role={link.name}>
-                    <a id={link.name} href={href}>{link.name}</a>
+                <li className={className} key={link.to}>
+                    <a href={href}>{link.name}</a>
                 </li>
             );
         });
