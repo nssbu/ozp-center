@@ -2,7 +2,6 @@
 
 var React = require('react');
 var _ = require('../../../utils/_');
-var { reviewWarningMessage } = require('ozp-react-commons/constants/messages');
 var { cloneWithProps, classSet } = React.addons;
 
 var InputMixin = {
@@ -17,8 +16,8 @@ var InputMixin = {
 
     render: function () {
         var labelClasses = classSet({ 'input-optional': this.props.optional });
+
         var CharLimit = (this.props.charLimit) ? `${this.props.charLimit}/${this.props.charLimit} characters remaining` : '';
-        var FOUOwarning = (this.props.showFOUOwarning) ? <div className="has-error"><p className="FOUOwarning small ">{reviewWarningMessage}</p></div> : '';
 
         if(this.props.charLimit && this.state.value){
           if(this.props.charLimit - this.state.value.length < 0){
@@ -38,8 +37,6 @@ var InputMixin = {
           CharLimit = `${this.props.charLimit} characters remaining`;
         }
 
-
-
         var charClass = classSet({
           'error-text': (this.state.value && this.state.value.length > this.state.charLimit)
         });
@@ -48,7 +45,6 @@ var InputMixin = {
                 <label htmlFor={ this.props.id } className={labelClasses}>{ this.props.label }</label>
                 <p className="small">{ this.props.description }</p>
                 { this.props.help && <p className="help-block small">{ this.props.help }</p>}
-                {FOUOwarning}
                 { cloneWithProps(this.renderInput(), this.getInputProps()) }
                 { this.props.charLimit &&
                     <p className={charClass}>{CharLimit}</p>
@@ -58,6 +54,7 @@ var InputMixin = {
     },
 
     shouldComponentUpdate: function (nextProps, nextState) {
+
         if (nextProps.id !== this.props.id) {
             return true;
         }

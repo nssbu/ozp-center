@@ -18,6 +18,7 @@ class PaginatedResponse {
 
         }
         this._results = results;
+
         return this;
     }
 

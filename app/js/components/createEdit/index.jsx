@@ -251,27 +251,12 @@ var ResourceForm = React.createClass({
 var ScreenshotForm = React.createClass({
     mixins: [ ValidatedFormMixin ],
 
-    componentDidUpdate: function(prev) {
-        this.props.value.order = this.props.count;
-    },
-
-    shouldComponentUpdate: function(newProps) {
-        return (newProps.value === this.props.value) ||
-            newProps.value.smallImageId == null ||
-            newProps.value.largeImageId == null;
-    },
-
     render: function () {
-        var up_arrow = <button type="button" onClick={this.props.reorderUpHandler} className="up-arrow"><i className="icon-caret-up"></i></button>;
-        var down_arrow = <button type="button" onClick={this.props.reorderDownHandler} className="down-arrow"><i className="icon-caret-down-14"></i></button>;
-
         return (
-            <div className="listItemRow" ref="listItemRow" >
+            <div className="listItemRow">
                 <div className="clear"></div>
-                <div className="col-md-2 dragBox">
-                <div><strong>Screenshot<br /> <span className="screenshotNum">{this.props.count+1 }</span></strong></div>
-                {this.props.value && this.props.total-1 == this.props.count ? null : down_arrow}
-                {this.props.value && this.props.count != 0 ? up_arrow : null}
+                <div className="col-md-2">
+                <div><strong>Screenshot<br /> <span className="screenshotNum">{this.props.count+1}</span></strong></div>
                 </div>
 
                 <div className="col-md-4">
@@ -290,23 +275,13 @@ var ScreenshotForm = React.createClass({
                     <MarkingInput id={this.props.value.largeImageMarking}
                                   { ...this.getFormComponentProps('largeImageMarking') }
                                   aria-label="Classification and Control Marking"/>
-                          </div>
+                </div>
 
                 <div className="col-md-2">
-                    <button type="button" className="close" onClick={this.props.removeHandler}>
-                        <span aria-hidden="true"><i className="icon-cross-16"></i></span><span className="sr-only">Remove</span>
-                    </button>
+                <button type="button" className="close" onClick={this.props.removeHandler}>
+                    <span aria-hidden="true"><i className="icon-cross-16"></i></span><span className="sr-only">Remove</span>
+                </button>
                 </div>
-
-                <div className="clear"></div>
-                <div className="col-md-2">
-                    <div><br/></div>
-                </div>
-
-                <div className="col-md-8">
-                    <TextAreaInput { ...this.getFormComponentProps('description') } id="description" label="Description:" charLimit="160"  optional/>
-                </div>
-
                 <div className="clear"></div>
             </div>
         );
@@ -354,7 +329,6 @@ var ListingForm = React.createClass({
             }));
         };
 
-
         var p = this.getFormComponentProps;
         var f = formLinks;
 
@@ -363,20 +337,7 @@ var ListingForm = React.createClass({
             durl.value = (durl.value) ? decodeURI(durl.value) : '';
             return durl;
         })();
-        ///TODO uncomment alert and return and comment form return to cause the alert to display with no changes to the form allowed to be made
-        /*
-        sweetAlert({
-          title: "Warning!",
-          text: "AppsMall is under maintenance. No changes can be made to the lisitings at this time.",
-          type: "error",
-          confirmButtonColor: "#DD6B55",
-          confirmButtonText: "Ok",
-          closeOnConfirm: true,
-          html: true
-        });
 
-        return(<h2 id={f.basicInformation.id}>Basic Information</h2>);
-        */
         return (
             <form ref="form" className="CreateEdit__form col-xs-9 col-lg-10">
                 <h2 id={f.basicInformation.id}>Basic Information</h2>
@@ -388,7 +349,7 @@ var ListingForm = React.createClass({
                     options={ getOptionsForSystemObject(system.types) }/>
                 <Select2Input id={f.categories.id} { ...p('categories') } multiple
                     options={ getOptionsForSystemObject(system.categories) }/>
-                <Select2TagInput id={f.tags.id} showFOUOwarning="true" { ...p('tags') } multiple/>
+                <Select2TagInput id={f.tags.id} { ...p('tags') } multiple/>
                 <TextAreaInput id={f.description.id} { ...p('description') } rows="6"/>
                 <TextAreaInput id={f.descriptionShort.id} { ...p('descriptionShort') } charLimit="100" rows="3"/>
 
@@ -396,9 +357,10 @@ var ListingForm = React.createClass({
                 <TextInput id={f.versionNumber.id} { ...p('versionName') }/>
                 <TextInput id={f.launchUrl.id} { ...decodedUrl }/>
 
-                <Toggle toggleId="privateListing"
-                    explanation={['This web application/widget is visible to all agencies in the community',
-                                    'This web application/widget is only visible to your agency']}
+
+                <Toggle
+                    explanation={['This web application/widget is visible to all organizations in the community',
+                                    'This web application/widget is only visible to your organization']}
                     id={f.isPrivate.id} { ...p('isPrivate') } />
 
                 <TextAreaInput id={f.requirements.id} { ...p('requirements') } rows="5"/>
@@ -409,7 +371,7 @@ var ListingForm = React.createClass({
                         return { id: intent.action, text: intent.action };
                     })
                 } optional />
-            <Toggle toggleId="singletonListing"
+                <Toggle
                   explanation={['Multiple instances of this web application/widget can be launched in webtop',
                     'Only one instance of this web application/widget can be launched in webtop']}
                   id={f.singleton.id} { ...p('singleton') } />
@@ -465,21 +427,6 @@ var ListingForm = React.createClass({
 
     componentDidMount: function() {
         this.setState({ currentNavTarget: this.getQuery().el });
-        var listing = this.props.value.certIssues
-        if (listing && listing.length > 0){
-          sweetAlert({
-            title: "Warning!",
-            text: "The following users in in the owner field have invalid certificates <font color='red'><b>" + listing + " </b></font>please remove these owners or notify them of this issue. You will be unable to save your listing until these changes have been made.",
-            type: "error",
-            confirmButtonColor: "#DD6B55",
-            confirmButtonText: "Ok",
-            closeOnConfirm: true,
-            html: true
-          });
-          listing=[];
-          this.setState({ currentNavTarget: 'create-edit-owners'});
-        }
-
     },
 
     componentDidUpdate: function(prevProps, prevState) {
@@ -558,7 +505,6 @@ var CreateEditPage = React.createClass({
             hasChanges: false,
             scrollToError: false,
             imageErrors: {screenshots: []},
-            certIssues: [],
             timestamp: Date.now(),
             isValid: true
         };
@@ -773,18 +719,14 @@ var CreateEditPage = React.createClass({
         };
 
         var status = approvalStatus[listing.approvalStatus];
-        var { IN_PROGRESS, REJECTED,PENDING_DELETION, DRAFT} = approvalStatus;
+        var { IN_PROGRESS, REJECTED } = approvalStatus;
         var showSubmit = [IN_PROGRESS, REJECTED].some(s => s === status);
-        var showUndelete = [PENDING_DELETION].some(s => s === status);
-        var inProgress = [IN_PROGRESS].some(s => s === status);
         var showPreview = !!listing.id;
         var showDelete = !!listing.id;
         var titleText = (this.getParams().listingId ? 'Edit ' : 'Create New ') + 'Listing';
         var saveText = showSave ? 'icon-save-white' : 'icon-check-white';
         var savingText = savingMessages[this.state.saveStatus];
         var idString = listing ? listing.id ? listing.id.toString() : '' : '';
-        var currentUser = this.props.currentUser
-        var owners = listing.owners.map(function (owner) {return owner.username;});
 
         var formProps = assign({},
             pick(this.state, ['errors', 'warnings', 'messages', 'firstError']),
@@ -798,19 +740,9 @@ var CreateEditPage = React.createClass({
             }
         );
 
-
-
         var deleteHref = this.makeHref(this.getActiveRoutePath(), this.getParams(), {
             listing: listing.id,
             action: 'delete'
-        });
-        var pendDeleteHref = this.makeHref(this.getActiveRoutePath(), this.getParams(), {
-            listing: listing.id,
-            action: 'pending_deletion'
-        });
-        var undeleteHref = this.makeHref(this.getActiveRoutePath(), this.getParams(), {
-            listing: listing.id,
-            action: 'undelete'
         });
 
         var header = (
@@ -831,25 +763,11 @@ var CreateEditPage = React.createClass({
                             </button>
                         }
                         {
-                            (showDelete && inProgress) &&
+                            showDelete &&
                             <a href={deleteHref} className="btn btn-default tool delete-button">
                                 <span className="create-edit-button">Delete</span>
                                 <i className="icon-trash-grayDark"></i>
                             </a>
-                        }
-                        {
-                            showDelete && (_.contains(owners, currentUser.username) || currentUser.isAdmin()) && !showUndelete && !inProgress &&
-                            <a href={pendDeleteHref} className="btn btn-default tool pendDelete-button">
-                                <span className="create-edit-button">Pend for Delete</span>
-                                <i className="icon-trash-grayDark"></i>
-                            </a>
-                        }
-                        {
-                          showUndelete && (_.contains(owners, currentUser.username) || currentUser.isAdmin()) &&
-                          <a href={undeleteHref} className="btn btn-default tool undelete-button">
-                              <span className="create-edit-button">Undelete</span>
-                              <i className="icon-trash-grayDark"></i>
-                          </a>
                         }
                         {
                             showSubmit &&

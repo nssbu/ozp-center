@@ -61,7 +61,7 @@ var listing = {
         {
             "id": 1,
             "contact_type": {
-                "name": "Civilian"
+                "name": "Civillian"
             },
             "secure_phone": null,
             "unsecure_phone": "321-123-7894",

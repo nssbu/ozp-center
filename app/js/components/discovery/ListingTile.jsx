@@ -6,18 +6,15 @@ var ActiveState = require('../../mixins/ActiveStateMixin');
 var IconRating = require('../shared/IconRating.jsx');
 var CenterLaunchLink = require('../CenterLaunchLink.jsx');
 var BookmarkButton = require('../BookmarkButton.jsx');
-var OzpAnalytics = require('../../analytics/ozp-analytics');
-var { listingMessages } = require('ozp-react-commons/constants/messages');
 
 var ListingTile = React.createClass({
 
     mixins: [Navigation, CurrentPath, ActiveState],
 
     statics: {
-        fromArray: function (array, from) {
-            if(!from) from = '';
+        fromArray: function (array) {
             return array.map(function(listing, i) {
-                return <ListingTile from={from} listing={listing} key={`${listing.id}.${i}`}/>;
+                return <ListingTile listing={listing} key={`${listing.id}.${i}`}/>;
             });
         },
         renderLimitedTiles: function(display, mostPopular) {
@@ -30,13 +27,6 @@ var ListingTile = React.createClass({
         }
     },
 
-    handleClick: function(from, title) {
-      if(from){
-        if(from == listingMessages['recommender.recommended'])
-          OzpAnalytics.trackRecommender(listingMessages['recommender.recommended'], title);
-      }
-    },
-
     render: function () {
         var listing = this.props.listing;
         var name = listing.title;
@@ -44,7 +34,6 @@ var ListingTile = React.createClass({
         var imageLargeUrl;
         var avgRate = listing.avgRate;
         var agencyShort = listing.agencyShort;
-        var totalVotes = listing.totalVotes;
         var href = this.makeHref(this.getActiveRoutePath(), null, {
             listing: listing.id,
             action: 'view',
@@ -54,7 +43,7 @@ var ListingTile = React.createClass({
         imageLargeUrl = listing.imageLargeUrl;
 
         return (
-            <li onClick={this.handleClick.bind(this, this.props.from, listing.title)} className="listing SearchListingTile">
+            <li className="listing SearchListingTile">
                 <a className="listing-link"  href={ href }>
                     {/* Empty link - css will make it cover entire <li>*/}
                     <span className="hidden-span">{listing.title}</span>
@@ -69,8 +58,7 @@ var ListingTile = React.createClass({
                         currentRating = { avgRate }
                         toggledClassName="icon-star-filled-yellow"
                         untoggledClassName="icon-star-filled-grayLighter"
-                        halfClassName="icon-star-half-filled-yellow"
-                        totalVotes={totalVotes} />
+                        halfClassName="icon-star-half-filled-yellow" />
                     {
                         agencyShort &&
                         <span className="company">

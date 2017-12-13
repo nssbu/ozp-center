@@ -12,7 +12,6 @@ var resetNotifications = function () {
 
 NotificationActions.createNotificationCompleted.listen(resetNotifications);
 NotificationActions.expireNotificationCompleted.listen(resetNotifications);
-NotificationActions.deleteNotificationCompleted.listen(resetNotifications);
 
 var _notifications;
 
@@ -22,7 +21,6 @@ var PastNotificationStore = Reflux.createStore({
         _notifications = new PaginatedList();
         this.listenTo(NotificationActions.fetchPastCompleted, this.fetchPastCompleted);
         this.listenTo(NotificationActions.expireNotificationCompleted, this.onExpireCompleted);
-        this.listenTo(NotificationActions.deleteNotificationCompleted, this.onDeleteCompleted);
     },
 
     getNotifications() {
@@ -42,10 +40,6 @@ var PastNotificationStore = Reflux.createStore({
 
     onExpireCompleted(notification) {
         _notifications.data.unshift(notification);
-        this.trigger();
-    },
-
-    onDeleteCompleted(id) {
         this.trigger();
     }
 
